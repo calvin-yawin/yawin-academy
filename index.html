@@ -86,6 +86,7 @@ code{background:color-mix(in srgb,var(--ac) 22%,transparent);padding:1px 6px;bor
 .cf{position:fixed;top:-16px;width:9px;height:14px;border-radius:2px;z-index:100;pointer-events:none;animation:fall 2s ease-in forwards}
 @keyframes fall{to{transform:translateY(112vh) rotate(720deg)}}
 @media(prefers-reduced-motion:reduce){.cf{display:none}}
+.resume{border-left:6px solid var(--ac);margin:16px 0 6px}.resume .row{margin-top:10px}
 </style></head><body><div class="w" id="app"></div>
 <button class="tgl" id="tt" onclick="tgl()" aria-label="Ganti tema terang atau gelap">🌙</button>
 <script>
@@ -316,10 +317,15 @@ let RK={},RA={},JUST='';
 const rt=R=>Math.max(2,Math.round([R.g,R.a,...R.s.map(x=>x[1]),...R.k].join(" ").split(" ").length/100));
 const fn=()=>{const n=((U.user_metadata||{}).full_name||'').trim().split(' ')[0];return n||U.email.split('@')[0]};
 const motiv=p=>p===0?'Yuk mulai langkah pertama hari ini.':p<50?'Bagus, terus lanjutkan!':p<100?'Sedikit lagi menuju sertifikat!':'Selamat, Anda lulus!';
-function cta(){let t,a;const i=M.findIndex((_,x)=>!qOK(x));if(i>=0){t='Lanjut belajar: Minggu '+(i+1);a="go('m"+i+"')"}else if(!pOK()){t='Kerjakan proyek akhir';a="go('pj')"}else if(!fOK()){t='Mulai ujian akhir';a="start('f')"}else if(!P.cert){t='Ambil sertifikat';a="go('cert')"}else return '';return `<div class="row"><button onclick="${a}">${t} →</button></div>`}
+let SLT=null;
+function sl(v){P.last=v;try{localStorage.setItem('yawin_last_'+U.id,v)}catch(e){}clearTimeout(SLT);SLT=setTimeout(()=>{db.from('profiles').update({last_view:v}).eq('id',U.id).then(()=>{},()=>{})},700)}
+function lsGet(){try{return localStorage.getItem('yawin_last_'+U.id)}catch(e){return null}}
+function lastOK(){const v=P.last;if(!v||!/^(r[0-9]-[0-9]|m[0-9])$/.test(v))return null;const i=+v[1],j=v[0]==='r'?+v[3]:-1;if(!M[i]||(j>=0&&!(M[i].l[j]&&M[i].r)))return null;return {v,i,j}}
+function resume(){const L=lastOK();if(!L)return '';const t=L.j>=0?`Minggu ${L.i+1} · Materi ${L.j+1}: ${M[L.i].l[L.j][0]}`:`Minggu ${L.i+1}: ${M[L.i].t}`;return `<div class="c resume"><p class="tg">▶️ Lanjutkan dari sini</p><b>${t}</b><div class="row"><button onclick="go('${L.v}')">Lanjutkan belajar →</button></div></div>`}
+function cta(){let t,a;const i=M.findIndex((_,x)=>!qOK(x));const L=lastOK();if(i>=0&&L&&L.i===i)return '';if(i>=0){t='Lanjut belajar: Minggu '+(i+1);a="go('m"+i+"')"}else if(!pOK()){t='Kerjakan proyek akhir';a="go('pj')"}else if(!fOK()){t='Mulai ujian akhir';a="start('f')"}else if(!P.cert){t='Ambil sertifikat';a="go('cert')"}else return '';return `<div class="row"><button onclick="${a}">${t} →</button></div>`}
 function boom(){const c=['#f59e0b','#fbbf24','#0f766e','#f97316','#fde68a','#2dd4bf'];for(let n=0;n<40;n++){const d=document.createElement('i');d.className='cf';d.style.cssText=`left:${Math.random()*100}vw;background:${c[n%6]};animation-delay:${Math.random()*.4}s;animation-duration:${1.5+Math.random()*1.3}s`;document.body.appendChild(d);setTimeout(()=>d.remove(),3500)}}
 function pickR(k,n){if(RK[k])return;const [i,j]=k.split('-').map(Number);RA[k]=n;if(n===M[i].r[j].q.a)RK[k]=true;keep()}
-async function fin(i,j){const k=i+'-'+j;if(!P.d[k]){const {error}=await db.from('lesson_progress').insert({user_id:U.id,module_idx:i,lesson_idx:j});if(error){MSG=tr(error.message);render();return}P.d[k]=1}JUST=k;boom();keep()}
+async function fin(i,j){const k=i+'-'+j;if(!P.d[k]){const {error}=await db.from('lesson_progress').insert({user_id:U.id,module_idx:i,lesson_idx:j});if(error){MSG=tr(error.message);render();return}P.d[k]=1}JUST=k;sl(j<M[i].l.length-1?'r'+i+'-'+(j+1):'m'+i);boom();keep()}
 function reader(){
 const [i,j]=V.slice(1).split('-').map(Number),m=M[i],R=m.r[j],k=i+'-'+j,dn=!!P.d[k],ok=dn||RK[k]===true,sel=RA[k],last=j===m.l.length-1;
 let h=`<div id="rp"></div><a class="bk" onclick="go('m${i}')">← Kembali ke Minggu ${i+1}</a><p class="tg">Materi ${j+1} dari ${m.l.length} · ⏱ ${rt(R)} menit baca</p><h2>${m.l[j][0]}</h2><div class="goal">🎯 <b>Tujuan:</b> ${R.g}</div>`;
@@ -342,19 +348,19 @@ const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]
 const blank=()=>({d:{},pr:{},q:{},pj:null,cert:null,proofs:[]});
 let U=null,P=blank(),PD={c:[],u:'',t:'',r:''},PS=null,V='home',A=null,MSG='',VR='',READY=false;
 async function load(){
-const r=await Promise.all([db.from('lesson_progress').select('module_idx,lesson_idx'),db.from('practice_proofs').select('module_idx'),db.from('quiz_results').select('scope,best_score'),db.from('project_submissions').select('*').maybeSingle(),db.from('certificates').select('*').maybeSingle(),db.rpc('get_proofs')]);
+const r=await Promise.all([db.from('lesson_progress').select('module_idx,lesson_idx'),db.from('practice_proofs').select('module_idx'),db.from('quiz_results').select('scope,best_score'),db.from('project_submissions').select('*').maybeSingle(),db.from('certificates').select('*').maybeSingle(),db.rpc('get_proofs'),db.from('profiles').select('last_view').maybeSingle()]);
 P=blank();
 (r[0].data||[]).forEach(x=>P.d[x.module_idx+'-'+x.lesson_idx]=1);
 (r[1].data||[]).forEach(x=>P.pr[x.module_idx]=1);
 (r[2].data||[]).forEach(x=>P.q[x.scope]=x.best_score);
-P.pj=r[3].data;P.cert=r[4].data;P.proofs=r[5].data||[];
+P.pj=r[3].data;P.cert=r[4].data;P.proofs=r[5].data||[];P.last=(r[6]&&r[6].data&&r[6].data.last_view)||lsGet();
 if(P.pj)PD={c:P.pj.checks||[],u:P.pj.url||'',t:P.pj.tables_text||'',r:P.pj.policy_text||''}}
 const tr=m=>{m=String(m||'');let x=m.match(/after (\d+) seconds/);if(x)return 'Demi keamanan, permintaan ini baru bisa diulang setelah '+x[1]+' detik. Tunggu sebentar lalu coba lagi.';if(/Invalid login/i.test(m))return 'Email atau kata sandi salah.';if(/already registered/i.test(m))return 'Email ini sudah terdaftar. Silakan masuk.';if(/not confirmed/i.test(m))return 'Email belum dikonfirmasi. Cek kotak masuk Anda.';if(/rate limit/i.test(m))return 'Batas pengiriman email tercapai. Tunggu beberapa menit lalu coba lagi.';if(/invalid format|valid email/i.test(m))return 'Format email tidak valid.';if(/at least \d+ char/i.test(m))return 'Kata sandi minimal 6 karakter.';if(/failed to fetch|network/i.test(m))return 'Tidak ada koneksi internet. Coba lagi.';return m};
 async function rpc(fn,args){const {data,error}=await db.rpc(fn,args);if(error){MSG=tr(error.message);render();scrollTo(0,0);return null}MSG='';return data}
 const mDone=i=>M[i].l.every((_,j)=>P.d[i+'-'+j])&&!!P.pr[i];
 const qOK=i=>(P.q['m'+i]||0)>=70,allQ=()=>M.every((_,i)=>qOK(i)),pOK=()=>!!(P.pj&&P.pj.passed),fOK=()=>(P.q.f||0)>=80;
 function pct(){let n=0;M.forEach((_,i)=>{n+=M[i].l.filter((_,j)=>P.d[i+'-'+j]).length+(P.pr[i]?1:0)+(qOK(i)?1:0)});return Math.round((n+(pOK()?1:0)+(fOK()?1:0))/26*100)}
-function go(v){V=v;A=null;MSG='';render();scrollTo(0,0)}
+function go(v){V=v;A=null;MSG='';if(/^(r[0-9]-[0-9]|m[0-9])$/.test(v)&&U)sl(v);render();scrollTo(0,0)}
 function keep(){const y=scrollY;render();scrollTo(0,y)}
 async function signup(){const nm=$('#nm').value.trim(),em=$('#em').value.trim(),pw=$('#pw').value;const back=()=>{render();$('#nm').value=nm;$('#em').value=em};if(!em||!pw){MSG='Isi email dan kata sandi terlebih dulu.';back();return}if(pw.length<6){MSG='Kata sandi minimal 6 karakter.';back();return}const {data,error}=await db.auth.signUp({email:em,password:pw,options:{data:{full_name:nm},emailRedirectTo:location.protocol.startsWith('http')?location.href.split(/[?#]/)[0]:undefined}});MSG=error?tr(error.message):(data.session?'':'Pendaftaran berhasil. Cek email Anda untuk konfirmasi, lalu masuk.');back()}
 async function signin(){const em=$('#em').value.trim(),pw=$('#pw').value;const back=()=>{render();$('#em').value=em};if(!em||!pw){MSG='Isi email dan kata sandi terlebih dulu.';back();return}const {error}=await db.auth.signInWithPassword({email:em,password:pw});if(error){MSG=tr(error.message);back()}}
@@ -370,7 +376,7 @@ async function ic(){const r=await rpc('issue_certificate',{p_name:$('#cn2').valu
 function cp(i,k,b){const t=M[i].x[k][1];const ok=()=>{b.textContent='Tersalin'};const fb=()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){b.textContent='Salin manual'}a.remove()};try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
 function auth(){return `<h1>YAWIN SaaS Academy</h1><p class="mu">Masuk untuk menyimpan progres dan mendapatkan sertifikat yang bisa diverifikasi.</p><div class="c" style="margin-top:14px"><input type="text" id="nm" placeholder="Nama lengkap (untuk mendaftar)" autocomplete="name"><input type="email" id="em" placeholder="Email" autocomplete="email" style="margin-top:8px"><input type="password" id="pw" placeholder="Kata sandi (minimal 6 karakter)" autocomplete="current-password" style="margin-top:8px"><div class="row"><button onclick="signin()">Masuk</button><button class="g" onclick="signup()">Daftar</button></div></div><div class="c" style="margin-top:14px"><b>Verifikasi sertifikat</b><input type="text" id="vc" placeholder="YAWIN-XXXXXXXX"><div class="row"><button class="g" onclick="vcert()">Periksa</button></div>${VR}</div>`}
 function home(){const p=pct(),cur=M.findIndex((_,i)=>!qOK(i));
-let h=`<div class="row" style="justify-content:space-between;align-items:center;margin:0 0 10px"><span class="tg">${esc(U.email)}</span><button class="g cp" onclick="db.auth.signOut()">Keluar</button></div><h1>YAWIN SaaS Academy</h1><p class="mu">Halo, ${esc(fn())}! ${motiv(p)}</p><div class="pb"><i style="width:${p}%"></i></div><p class="tg">${p}% selesai</p>${cta()}<div class="rail">`;
+let h=`<div class="row" style="justify-content:space-between;align-items:center;margin:0 0 10px"><span class="tg">${esc(U.email)}</span><button class="g cp" onclick="db.auth.signOut()">Keluar</button></div><h1>YAWIN SaaS Academy</h1><p class="mu">Halo, ${esc(fn())}! ${motiv(p)}</p><div class="pb"><i style="width:${p}%"></i></div><p class="tg">${p}% selesai</p>${resume()}${cta()}<div class="rail">`;
 M.forEach((m,i)=>{const ok=qOK(i),lk=i>0&&!qOK(i-1);h+=`<div class="st ${ok?'on':''} ${i===cur?'cur':''} ${lk?'lk':''}"><div class="c" ${lk?'':`onclick="go('m${i}')"`}><b>${IC[i]} Minggu ${i+1}: ${m.t}</b><p class="mu">${m.l.filter((_,j)=>P.d[i+'-'+j]).length}/4 materi, bukti praktik ${P.pr[i]?'terverifikasi':'belum'}, kuis ${P.q['m'+i]!=null?'terbaik '+P.q['m'+i]+'%':'belum dikerjakan'}${lk?' (selesaikan minggu sebelumnya)':''}</p></div></div>`});
 h+=`<div class="st ${pOK()?'on':''} ${allQ()?'':'lk'}"><div class="c" ${allQ()?`onclick="go('pj')"`:''}><b>Proyek akhir: SaaS mini</b><p class="mu">${pOK()?'Lulus':allQ()?'Kirim proyek untuk diperiksa server':'Terbuka setelah semua kuis lulus'}</p></div></div>`;
 h+=`<div class="st ${fOK()?'on':''} ${allQ()&&pOK()?'':'lk'}"><div class="c" ${allQ()&&pOK()?`onclick="start('f')"`:''}><b>Ujian akhir (8 soal, nilai minimal 80)</b><p class="mu">${P.q.f!=null?'Nilai terbaik '+P.q.f+'%':'Belum dikerjakan'}</p></div></div>`;
