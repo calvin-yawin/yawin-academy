@@ -11,11 +11,11 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#fbf6ec;--sf:#fffdf8;--tx:#2a1f12;--mu:#6f6150;--ac:#f59e0b;--on:#2a1503;--lk:#b45309;--hl:#0f766e;--g1:#a16207;--g2:#d4960a;--g3:#f8d35e;--bd:#eadfc9;--ok:#15803d;--no:#b42318;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16110a;--sf:#211a10;--tx:#f6ecd9;--mu:#b3a58c;--ac:#fbbf24;--on:#2a1503;--lk:#fbbf24;--hl:#2dd4bf;--g1:#d97706;--g2:#fbbf24;--g3:#fff0b3;--bd:#3a2f1e;--ok:#4ade80;--no:#f87171;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#16110a;--sf:#211a10;--tx:#f6ecd9;--mu:#b3a58c;--ac:#fbbf24;--on:#2a1503;--lk:#fbbf24;--hl:#2dd4bf;--g1:#d97706;--g2:#fbbf24;--g3:#fff0b3;--bd:#3a2f1e;--ok:#4ade80;--no:#f87171;color-scheme:dark}
+:root{--bg:#fffaf0;--bg2:#ffecb3;--sf:#fffdf8;--tx:#2a1f12;--mu:#6f6150;--ac:#f59e0b;--on:#2a1503;--lk:#b45309;--hl:#0f766e;--g1:#a16207;--g2:#d4960a;--g3:#f8d35e;--bd:#eadfc9;--ok:#15803d;--no:#b42318;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16110a;--bg2:#16110a;--sf:#211a10;--tx:#f6ecd9;--mu:#b3a58c;--ac:#fbbf24;--on:#2a1503;--lk:#fbbf24;--hl:#2dd4bf;--g1:#d97706;--g2:#fbbf24;--g3:#fff0b3;--bd:#3a2f1e;--ok:#4ade80;--no:#f87171;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16110a;--bg2:#16110a;--sf:#211a10;--tx:#f6ecd9;--mu:#b3a58c;--ac:#fbbf24;--on:#2a1503;--lk:#fbbf24;--hl:#2dd4bf;--g1:#d97706;--g2:#fbbf24;--g3:#fff0b3;--bd:#3a2f1e;--ok:#4ade80;--no:#f87171;color-scheme:dark}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 'Bricolage Grotesque',system-ui,sans-serif}
+body{margin:0;min-height:100vh;background:linear-gradient(180deg,var(--bg2) 0,var(--bg) 340px) no-repeat,var(--bg);color:var(--tx);font:16px/1.55 'Bricolage Grotesque',system-ui,sans-serif}
 .w{max-width:760px;margin:0 auto;padding:22px 16px 70px}
 h1{font-size:clamp(28px,6vw,40px);line-height:1.1;margin:0 0 6px;font-weight:800;letter-spacing:-.02em}
 h2{font-size:22px;margin:0 0 8px;font-weight:800}
@@ -69,7 +69,25 @@ body.busy::after{content:attr(data-m);position:fixed;bottom:calc(18px + env(safe
 h1{background:linear-gradient(100deg,var(--g1) 0%,var(--g2) 30%,var(--g3) 50%,var(--g2) 70%,var(--g1) 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:shine 6s linear infinite;filter:drop-shadow(0 1px 1px rgba(120,70,0,.28));padding-bottom:2px}
 @keyframes shine{from{background-position:0% 0}to{background-position:200% 0}}
 @media(prefers-reduced-motion:reduce){h1{animation:none}}
+
+.c{box-shadow:0 1px 2px rgba(160,100,10,.06),0 8px 22px rgba(190,130,20,.10);transition:transform .15s,box-shadow .15s}
+.st:not(.lk) .c:hover,.lesson:hover{transform:translateY(-2px);box-shadow:0 10px 26px rgba(190,130,20,.2)}
+button{transition:transform .1s,filter .15s}button:active{transform:scale(.97)}button:hover:not(:disabled){filter:brightness(1.06)}
+.lesson{display:flex;gap:14px;align-items:flex-start;cursor:pointer;margin:10px 0}.lesson .lb{font-size:26px;line-height:1.2}.lesson.dn{border-color:var(--ok)}
+.goal{background:color-mix(in srgb,var(--ac) 22%,transparent);border-radius:12px;padding:12px 14px;margin:12px 0}
+.anl{background:color-mix(in srgb,var(--hl) 14%,transparent);border-left:4px solid var(--hl);border-radius:10px;padding:12px 14px;margin:18px 0}
+h3{font-size:18px;margin:24px 0 4px}
+.rd{font-size:17px;line-height:1.7;margin:6px 0}
+.mis{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin:14px 0}.mis summary{cursor:pointer;font-weight:600}.mis ul,.sum ul{margin:10px 0 0;padding-left:20px}.mis li,.sum li{margin:6px 0}
+.chk{margin:16px 0;border:2px solid var(--ac)}.chk p{margin:8px 0}
+code{background:color-mix(in srgb,var(--ac) 22%,transparent);padding:1px 6px;border-radius:5px;font:14px ui-monospace,Menlo,Consolas,monospace}
+#rp{position:fixed;top:0;left:0;height:5px;width:0;background:var(--hl);z-index:98;transition:width .1s}
+.tgl{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));right:14px;z-index:97;width:44px;height:44px;border-radius:50%;padding:0;font-size:20px;background:var(--sf);color:var(--tx);border:1px solid var(--bd);box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.cf{position:fixed;top:-16px;width:9px;height:14px;border-radius:2px;z-index:100;pointer-events:none;animation:fall 2s ease-in forwards}
+@keyframes fall{to{transform:translateY(112vh) rotate(720deg)}}
+@media(prefers-reduced-motion:reduce){.cf{display:none}}
 </style></head><body><div class="w" id="app"></div>
+<button class="tgl" id="tt" onclick="tgl()" aria-label="Ganti tema terang atau gelap">🌙</button>
 <script>
 const M=[
 {t:'Fondasi coding dan cara kerja web',l:[
@@ -197,6 +215,121 @@ update organizations set plan = 'pro' where name = 'Toko A';
 select count(*) filter (where plan = 'pro') * 99000 as mrr_rupiah
 from organizations;`,'Di aplikasi nyata, perubahan plan dilakukan oleh server saat menerima webhook dari Midtrans atau Xendit, bukan manual.']],p:'Ubah app minggu 3 menjadi SaaS mini: organisasi, role, plan Free/Pro, dan pembayaran sandbox Midtrans atau Xendit.',}];
 const PJ=['Database punya minimal 4 tabel berelasi (misalnya organizations, members, projects, subscriptions)','Daftar dan login berfungsi','RLS memisahkan data tiap organisasi','Ada plan Free dan Pro dengan batasan fitur','Pembayaran sandbox terhubung dan aplikasi sudah di-deploy ke link publik'];
+const RD=[
+{g:`Setelah materi ini, Anda bisa menjelaskan apa yang terjadi saat sebuah situs dibuka, serta membedakan client, server, request, dan response.`,
+s:[
+[`Dua pihak yang selalu terlibat`,`Setiap kali Anda membuka situs atau aplikasi, ada dua pihak yang bekerja. <b>Client</b> adalah perangkat atau browser Anda, pihak yang <i>meminta</i>. <b>Server</b> adalah komputer yang menyimpan data dan program, pihak yang <i>menjawab</i>. Server bukan alat ajaib: ia komputer biasa yang menyala terus-menerus, tersambung ke internet, dan biasanya ditempatkan di pusat data.`],
+[`Request dan response`,`Komunikasi keduanya berpola tanya-jawab. Client mengirim <b>request</b> (permintaan), server membalas dengan <b>response</b> (jawaban). Request memuat alamat tujuan dan jenis permintaan: <code>GET</code> untuk mengambil data, <code>POST</code> untuk mengirim data baru. Response memuat isi yang diminta beserta kode status yang menjelaskan hasilnya.`,`Request dari browser:
+GET /kursus HTTP/1.1
+Host: yawin-academy.netlify.app
+
+Response dari server:
+HTTP/1.1 200 OK
+Content-Type: text/html
+
+<html> ...isi halaman... </html>`],
+[`Apa yang terjadi saat Anda mengetik alamat situs`,`Ada lima langkah yang berlangsung dalam hitungan milidetik. (1) Browser mencari lokasi server lewat <b>DNS</b>, semacam buku telepon internet yang menerjemahkan nama situs menjadi alamat angka. (2) Browser mengirim request ke server itu. (3) Server memproses, kadang dengan mengambil data dari database. (4) Server mengirim response. (5) Browser menampilkan hasilnya sebagai halaman yang Anda lihat.`],
+[`Kode status yang perlu dikenal`,`Setiap response membawa kode status. <code>200</code> berarti berhasil. <code>404</code> berarti server aktif tetapi halaman yang diminta tidak ada. <code>401</code> atau <code>403</code> berarti Anda belum login atau tidak berhak. <code>500</code> berarti ada kesalahan di sisi server. Kode ini nanti sering muncul saat Anda menguji aplikasi sendiri.`]
+],
+a:`Bayangkan restoran. Anda (client) memesan lewat pelayan. Dapur (server) menyiapkan makanan, lalu pelayan mengantarkannya. Pesanan adalah request, makanan yang datang adalah response. Kalau menu yang Anda minta tidak ada, dapur menjawab bahwa menu itu tidak tersedia, itulah 404.`,
+k:[`Mengira data aplikasi tersimpan di HP atau browser. Data penting (akun, nilai, progres) tersimpan di server dan database, itu sebabnya Anda bisa masuk dari perangkat lain.`,`Menganggap 404 berarti internet mati. Justru sebaliknya: server aktif dan menjawab, hanya saja alamat yang diminta tidak ditemukan.`,`Mengira alamat <code>localhost</code> bisa dibuka orang lain. <code>localhost</code> hanya menunjuk ke komputer Anda sendiri, jadi aplikasi baru bisa diakses publik setelah dipasang di server atau hosting.`],
+q:{q:`Anda membuka sebuah halaman dan server membalas dengan kode 404. Artinya apa?`,o:[`Internet Anda terputus`,`Server aktif, tetapi halaman yang diminta tidak ditemukan`,`Terjadi kesalahan di dalam program server`,`Kata sandi Anda salah`],a:1,e:`404 berarti server menjawab tetapi tidak menemukan halaman yang diminta. Kesalahan di dalam server adalah kode 500.`},
+r:[`Client meminta, server menjawab.`,`Pola dasarnya adalah request lalu response.`,`Kode status menjelaskan hasil: 200 berhasil, 404 tidak ditemukan, 500 error server.`,`Data penting disimpan di server, bukan di perangkat pengguna.`]},
+
+{g:`Setelah materi ini, Anda bisa menjelaskan apa itu API, membaca data JSON, dan memahami bagaimana sebuah aplikasi mengambil data dari server.`,
+s:[
+[`Apa itu API`,`API (Application Programming Interface) adalah pintu resmi untuk berkomunikasi dengan sebuah sistem. Aplikasi tidak membuka database orang lain secara langsung. Ia mengetuk API, meminta data dengan aturan yang jelas, lalu menerima jawabannya. Dengan begitu pemilik sistem tetap mengontrol apa yang boleh diakses.`],
+[`JSON: bahasa data yang dipahami semua`,`Data yang dikirim API umumnya berbentuk <b>JSON</b>, yaitu pasangan <i>nama</i> dan <i>nilai</i> yang mudah dibaca manusia maupun mesin. Aturan penting: objek dibungkus kurung kurawal, daftar dibungkus kurung siku, teks memakai tanda kutip ganda, sedangkan angka dan true atau false ditulis tanpa kutip.`,`{
+  "nama": "Sari",
+  "umur": 27,
+  "kota": "Medan",
+  "hobi": ["membaca", "berenang"],
+  "aktif": true
+}`],
+[`Endpoint dan metode`,`Setiap fungsi API punya alamat khusus yang disebut <b>endpoint</b>, misalnya <code>/users</code> untuk daftar pengguna. Metode menunjukkan tujuan: <code>GET</code> mengambil, <code>POST</code> menambah, <code>PATCH</code> mengubah, <code>DELETE</code> menghapus. Empat pasangan ini akan bertemu lagi sebagai CRUD di Minggu 3.`],
+[`Memanggil API dari kode`,`Dalam JavaScript, perintah <code>fetch</code> dipakai untuk mengirim request, lalu <code>res.json()</code> mengubah balasan menjadi data yang bisa diolah. Contoh berikut mengambil satu pengguna dan menampilkan namanya. Anda akan menjalankan kode yang mirip di contoh praktik.`,`fetch("https://jsonplaceholder.typicode.com/users/1")
+  .then(res => res.json())
+  .then(data => console.log(data.name));`]
+],
+a:`API seperti teller bank. Anda tidak masuk ke brankas dan mengambil uang sendiri. Anda mengisi formulir, menyerahkannya ke teller, dan teller mengembalikan hasilnya. Formulir adalah request, teller adalah API, dan uang atau slip yang Anda terima adalah response.`,
+k:[`Menulis JSON dengan tanda kutip tunggal, atau menaruh koma setelah elemen terakhir. Keduanya membuat JSON tidak valid dan menyebabkan error.`,`Mengira semua API gratis dan bebas dipakai. Banyak API butuh kunci (API key) dan membatasi jumlah permintaan.`,`Menaruh API key rahasia di kode frontend. Kode frontend bisa dilihat siapa saja, jadi kunci rahasia harus disimpan di server.`],
+q:{q:`Manakah penulisan JSON yang valid?`,o:[`{"nama": "Sari", "umur": 27}`,`{nama: 'Sari', umur: 27}`,`{"nama": "Sari", "umur": 27,}`,`nama = Sari, umur = 27`],a:0,e:`JSON yang valid memakai tanda kutip ganda untuk nama dan teks, serta tidak boleh ada koma setelah elemen terakhir.`},
+r:[`API adalah pintu resmi untuk meminta data dari sebuah sistem.`,`JSON adalah format data berupa pasangan nama dan nilai.`,`GET mengambil, POST menambah, PATCH mengubah, DELETE menghapus.`,`Kunci rahasia tidak boleh ditaruh di kode frontend.`]},
+
+{g:`Setelah materi ini, Anda mengenal empat blok dasar pemrograman, yaitu variabel, percabangan, perulangan, dan function, serta bisa membaca program sederhana.`,
+s:[
+[`Variabel: kotak berlabel`,`Variabel menyimpan nilai dengan sebuah nama supaya bisa dipakai lagi. Nilai punya jenis: teks (string), angka (number), benar atau salah (boolean), daftar (array), dan objek. Program dibaca dari atas ke bawah, satu baris pada satu waktu.`,`let nama = "Sari";
+let harga = 150000;
+let lunas = false;`],
+[`Percabangan: mengambil keputusan`,`Dengan <code>if</code> dan <code>else</code>, program memilih jalur berdasarkan kondisi. Kalau kondisinya benar, blok pertama dijalankan. Kalau tidak, blok <code>else</code> yang dijalankan.`,`let umur = 20;
+if (umur >= 17) {
+  console.log("Boleh membuat KTP");
+} else {
+  console.log("Belum boleh");
+}`],
+[`Perulangan: mengerjakan hal yang sama berkali-kali`,`Perulangan menjalankan blok kode berulang kali tanpa Anda menulisnya satu per satu. Pada contoh ini, program menyapa semua peserta dalam daftar. Perhatikan bahwa hitungan posisi dalam daftar dimulai dari 0, bukan 1.`,`let peserta = ["Sari", "Budi", "Citra"];
+for (let i = 0; i < peserta.length; i++) {
+  console.log("Halo, " + peserta[i]);
+}`],
+[`Function: resep yang bisa dipakai ulang`,`Function membungkus beberapa langkah dengan sebuah nama. Ia menerima bahan (parameter) dan mengembalikan hasil (return). Setelah dibuat sekali, function bisa dipanggil sebanyak yang diperlukan.`,`function hitungDiskon(harga, persen) {
+  return harga - (harga * persen / 100);
+}
+console.log(hitungDiskon(150000, 20)); // 120000`]
+],
+a:`Anggap memasak. Variabel adalah bahan yang diberi label. If adalah keputusan: kalau terlalu asin, tambah air. Loop adalah perintah mengaduk sepuluh kali. Function adalah resep yang bisa Anda pakai ulang kapan saja tanpa menulisnya dari awal.`,
+k:[`Tertukar antara <code>=</code> dan <code>===</code>. Satu tanda sama dengan menyimpan nilai, tiga tanda sama dengan membandingkan.`,`Lupa bahwa posisi dalam daftar dimulai dari 0. Item pertama adalah <code>peserta[0]</code>.`,`Membuat loop yang tidak pernah berhenti karena kondisinya tidak pernah salah. Ini bisa membuat browser membeku.`,`Salah huruf besar-kecil. <code>nama</code> dan <code>Nama</code> dianggap dua variabel berbeda.`],
+q:{q:`Berapa isi variabel total setelah kode berikut selesai dijalankan?`,c:`let total = 0;
+for (let i = 1; i <= 3; i++) {
+  total = total + i;
+}`,o:[`3`,`4`,`6`,`0`],a:2,e:`Loop menambahkan 1, lalu 2, lalu 3, sehingga total menjadi 6.`},
+r:[`Variabel menyimpan nilai dengan nama.`,`If dan else memilih jalur berdasarkan kondisi.`,`Loop mengulang langkah, dan posisi daftar dimulai dari 0.`,`Function membungkus langkah agar bisa dipakai ulang.`]},
+
+{g:`Setelah materi ini, Anda memahami fungsi Git dan GitHub, serta bisa menjelaskan alur dasar menyimpan perubahan (commit) dan mengirimnya ke GitHub (push).`,
+s:[
+[`Masalah yang diselesaikan Git`,`Pernah punya berkas bernama <code>laporan_final_revisi_baru_FIX2.docx</code>? Itu masalah yang diselesaikan Git. Git mencatat riwayat perubahan kode, sehingga Anda bisa melihat apa yang berubah, kapan, dan oleh siapa, lalu kembali ke versi sebelumnya kalau ada yang rusak.`],
+[`Git dan GitHub itu berbeda`,`<b>Git</b> adalah program yang berjalan di komputer Anda untuk mencatat riwayat. <b>GitHub</b> adalah situs untuk menyimpan salinan proyek Git secara online, berbagi, dan bekerja bersama. Folder proyek yang dilacak Git disebut <b>repository</b>. Netlify dan Vercel juga membaca repository dari GitHub untuk men-deploy aplikasi.`],
+[`Alur dasar yang paling sering dipakai`,`Tiga kata kunci yang perlu diingat: <code>add</code> memilih perubahan yang akan disimpan, <code>commit</code> menyimpannya sebagai satu titik riwayat beserta catatan, dan <code>push</code> mengirimnya ke GitHub.`,`git init                               # mulai melacak folder ini
+git add .                              # pilih semua perubahan
+git commit -m "tambah halaman login"   # simpan + catatan
+git remote add origin https://github.com/namaanda/yawin-academy.git
+git push -u origin main                # kirim ke GitHub`],
+[`Branch dan pull request`,`<b>Branch</b> adalah cabang untuk mencoba fitur baru tanpa mengganggu versi utama (biasanya bernama <code>main</code>). Kalau fitur sudah siap, Anda mengajukan <b>pull request</b>, yaitu permintaan agar cabang itu digabungkan setelah ditinjau. Saat bekerja sendirian, Anda boleh langsung memakai <code>main</code>, tetapi pada tim kebiasaan ini menjaga versi utama tetap aman.`]
+],
+a:`Git seperti fitur riwayat versi pada dokumen online, tetapi untuk seluruh folder proyek, dan Anda yang memutuskan kapan mengambil foto (commit). Foto-foto itu tersusun berurutan, sehingga Anda bisa kembali ke salah satunya kapan saja.`,
+k:[`Meng-commit berkas rahasia seperti <code>.env</code> atau kunci API. Daftarkan berkas itu ke <code>.gitignore</code> sebelum <code>git add</code>.`,`Menulis catatan commit seperti update atau fix. Tulis yang spesifik, misalnya perbaiki validasi email, supaya riwayatnya berguna.`,`Lupa <code>git add</code> sebelum <code>git commit</code>, sehingga tidak ada perubahan yang tersimpan.`,`Mengira commit sudah mengirim kode ke GitHub. Commit hanya menyimpan di komputer Anda, pengiriman dilakukan oleh <code>push</code>.`],
+q:{q:`Urutan yang benar untuk menyimpan perubahan lalu mengirimnya ke GitHub adalah...`,o:[`commit, add, push`,`add, commit, push`,`push, add, commit`,`add, push, commit`],a:1,e:`Pilih perubahan dengan add, simpan dengan commit, lalu kirim dengan push.`},
+r:[`Git mencatat riwayat perubahan kode.`,`GitHub menyimpan repository online dan memudahkan kerja bersama.`,`Alurnya add, commit, push.`,`Jangan pernah meng-commit berkas rahasia seperti .env.`]}
+];
+M[0].r=RD;
+let T='light';try{T=localStorage.getItem('yawin_theme')||'light'}catch(e){}
+document.documentElement.dataset.theme=T;
+document.getElementById('tt').textContent=T==='dark'?'☀️':'🌙';
+function tgl(){T=T==='dark'?'light':'dark';try{localStorage.setItem('yawin_theme',T)}catch(e){}document.documentElement.dataset.theme=T;document.getElementById('tt').textContent=T==='dark'?'☀️':'🌙'}
+const IC=['🌐','🗄️','🚀','💼'];
+let RK={},RA={},JUST='';
+const rt=R=>Math.max(2,Math.round([R.g,R.a,...R.s.map(x=>x[1]),...R.k].join(" ").split(" ").length/100));
+const fn=()=>{const n=((U.user_metadata||{}).full_name||'').trim().split(' ')[0];return n||U.email.split('@')[0]};
+const motiv=p=>p===0?'Yuk mulai langkah pertama hari ini.':p<50?'Bagus, terus lanjutkan!':p<100?'Sedikit lagi menuju sertifikat!':'Selamat, Anda lulus!';
+function cta(){let t,a;const i=M.findIndex((_,x)=>!qOK(x));if(i>=0){t='Lanjut belajar: Minggu '+(i+1);a="go('m"+i+"')"}else if(!pOK()){t='Kerjakan proyek akhir';a="go('pj')"}else if(!fOK()){t='Mulai ujian akhir';a="start('f')"}else if(!P.cert){t='Ambil sertifikat';a="go('cert')"}else return '';return `<div class="row"><button onclick="${a}">${t} →</button></div>`}
+function boom(){const c=['#f59e0b','#fbbf24','#0f766e','#f97316','#fde68a','#2dd4bf'];for(let n=0;n<40;n++){const d=document.createElement('i');d.className='cf';d.style.cssText=`left:${Math.random()*100}vw;background:${c[n%6]};animation-delay:${Math.random()*.4}s;animation-duration:${1.5+Math.random()*1.3}s`;document.body.appendChild(d);setTimeout(()=>d.remove(),3500)}}
+function pickR(k,n){if(RK[k])return;const [i,j]=k.split('-').map(Number);RA[k]=n;if(n===M[i].r[j].q.a)RK[k]=true;keep()}
+async function fin(i,j){const k=i+'-'+j;if(!P.d[k]){const {error}=await db.from('lesson_progress').insert({user_id:U.id,module_idx:i,lesson_idx:j});if(error){MSG=tr(error.message);render();return}P.d[k]=1}JUST=k;boom();keep()}
+function reader(){
+const [i,j]=V.slice(1).split('-').map(Number),m=M[i],R=m.r[j],k=i+'-'+j,dn=!!P.d[k],ok=dn||RK[k]===true,sel=RA[k],last=j===m.l.length-1;
+let h=`<div id="rp"></div><a class="bk" onclick="go('m${i}')">← Kembali ke Minggu ${i+1}</a><p class="tg">Materi ${j+1} dari ${m.l.length} · ⏱ ${rt(R)} menit baca</p><h2>${m.l[j][0]}</h2><div class="goal">🎯 <b>Tujuan:</b> ${R.g}</div>`;
+R.s.forEach(([t,x,c])=>{h+=`<h3>${t}</h3><p class="rd">${x}</p>`+(c?`<pre>${esc(c)}</pre>`:'')});
+h+=`<div class="anl">💡 <b>Analogi:</b> ${R.a}</div><details class="mis"><summary>⚠️ Kesalahan umum pemula</summary><ul>${R.k.map(x=>`<li>${x}</li>`).join('')}</ul></details>`;
+h+=`<div class="c chk"><b>🧠 Cek pemahaman</b><p>${R.q.q}</p>${R.q.c?`<pre>${esc(R.q.c)}</pre>`:''}`;
+R.q.o.forEach((o,n)=>{let c='o';if(sel===n)c+=n===R.q.a?' ok':' no';else if(ok&&n===R.q.a)c+=' ok';h+=`<button class="${c}" onclick="pickR('${k}',${n})">${esc(o)}</button>`});
+h+=ok?`<div class="ex">✅ Tepat! ${R.q.e}</div>`:(sel!==undefined?'<div class="ex">❌ Belum tepat, coba pilih jawaban lain.</div>':'');
+h+=`</div><div class="c sum"><b>📝 Ringkasan</b><ul>${R.r.map(x=>`<li>${x}</li>`).join('')}</ul></div>`;
+if(JUST===k&&dn)h+='<div class="bn p">🎉 Materi selesai, kerja bagus!</div>';
+h+='<div class="row">';
+if(!dn)h+=`<button ${ok?'':'disabled'} onclick="fin(${i},${j})">${ok?'Selesai membaca ✓':'Jawab cek pemahaman dulu'}</button>`;
+else if(last)h+=`<button onclick="go('m${i}')">Lanjut ke contoh praktik →</button>`;
+else h+=`<button onclick="go('r${i}-${j+1}')">Materi berikutnya →</button>`;
+return h+'</div>'}
+addEventListener('scroll',()=>{const e=document.getElementById('rp');if(!e)return;const d=document.documentElement;e.style.width=Math.min(100,scrollY/Math.max(1,d.scrollHeight-innerHeight)*100)+'%'},{passive:true});
 const SB_URL='https://syegjfqhbxuvzuxgjhob.supabase.co',SB_KEY='sb_publishable_PQRgCtM1RYEA-jNcMY7eMQ_vfOOfi3S';
 const db=supabase.createClient(SB_URL,SB_KEY);
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -224,21 +357,21 @@ async function tg(i,j){const k=i+'-'+j;if(P.d[k]){const {error}=await db.from('l
 async function vf(i){const r=await rpc('verify_proof',{p_module:i,p_answer:$('#v'+i).value.trim()});if(r===null)return;if(r)P.pr[i]=1;else{MSG='Jawaban belum sesuai. Jalankan contohnya, lihat hasilnya dengan teliti, lalu coba lagi.'}keep()}
 async function start(k){const r=await rpc('start_quiz',{p_scope:k});if(!r)return;A={k,id:r.attempt_id,th:r.threshold,r:null,rev:null,qs:r.questions.map(q=>({...q,s:-1}))};V='quiz';render();scrollTo(0,0)}
 function pick(i,j){if(A.r!==null)return;A.qs[i].s=j;keep()}
-async function sub(){const ans={};A.qs.forEach(q=>ans[q.id]=q.options[q.s]);const r=await rpc('submit_quiz',{p_attempt:A.id,p_answers:ans});if(!r)return;A.r=r.score;A.rev={};r.review.forEach(x=>A.rev[x.id]=x);P.q[A.k]=Math.max(P.q[A.k]||0,r.score);render();scrollTo(0,0)}
+async function sub(){const ans={};A.qs.forEach(q=>ans[q.id]=q.options[q.s]);const r=await rpc('submit_quiz',{p_attempt:A.id,p_answers:ans});if(!r)return;A.r=r.score;A.rev={};r.review.forEach(x=>A.rev[x.id]=x);P.q[A.k]=Math.max(P.q[A.k]||0,r.score);if(r.pass)boom();render();scrollTo(0,0)}
 function tp(i){const c=PD.c,k=c.indexOf(i);k<0?c.push(i):c.splice(k,1);keep()}
-async function sp(){const r=await rpc('submit_project',{p_checks:PD.c,p_url:PD.u,p_tables:PD.t,p_policy:PD.r});if(!r)return;PS=r;P.pj={passed:r.passed};keep()}
-async function ic(){const r=await rpc('issue_certificate',{p_name:$('#cn2').value});if(r){P.cert={id:r.id,full_name:r.full_name,issued_at:r.issued_at};keep()}}
+async function sp(){const r=await rpc('submit_project',{p_checks:PD.c,p_url:PD.u,p_tables:PD.t,p_policy:PD.r});if(!r)return;PS=r;P.pj={passed:r.passed};if(r.passed)boom();keep()}
+async function ic(){const r=await rpc('issue_certificate',{p_name:$('#cn2').value});if(r){P.cert={id:r.id,full_name:r.full_name,issued_at:r.issued_at};boom();keep()}}
 function cp(i,k,b){const t=M[i].x[k][1];const ok=()=>{b.textContent='Tersalin'};const fb=()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){b.textContent='Salin manual'}a.remove()};try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
 function auth(){return `<h1>YAWIN SaaS Academy</h1><p class="mu">Masuk untuk menyimpan progres dan mendapatkan sertifikat yang bisa diverifikasi.</p><div class="c" style="margin-top:14px"><input type="text" id="nm" placeholder="Nama lengkap (untuk mendaftar)" autocomplete="name"><input type="email" id="em" placeholder="Email" autocomplete="email" style="margin-top:8px"><input type="password" id="pw" placeholder="Kata sandi (minimal 6 karakter)" autocomplete="current-password" style="margin-top:8px"><div class="row"><button onclick="signin()">Masuk</button><button class="g" onclick="signup()">Daftar</button></div></div><div class="c" style="margin-top:14px"><b>Verifikasi sertifikat</b><input type="text" id="vc" placeholder="YAWIN-XXXXXXXX"><div class="row"><button class="g" onclick="vcert()">Periksa</button></div>${VR}</div>`}
 function home(){const p=pct(),cur=M.findIndex((_,i)=>!qOK(i));
-let h=`<div class="row" style="justify-content:space-between;align-items:center;margin:0 0 10px"><span class="tg">${esc(U.email)}</span><button class="g cp" onclick="db.auth.signOut()">Keluar</button></div><h1>YAWIN SaaS Academy</h1><p class="mu">Kursus 4 minggu untuk memahami coding, database, dan pembuatan aplikasi SaaS. Penilaian dilakukan di server.</p><div class="pb"><i style="width:${p}%"></i></div><p class="tg">${p}% selesai</p><div class="rail">`;
-M.forEach((m,i)=>{const ok=qOK(i),lk=i>0&&!qOK(i-1);h+=`<div class="st ${ok?'on':''} ${i===cur?'cur':''} ${lk?'lk':''}"><div class="c" ${lk?'':`onclick="go('m${i}')"`}><b>Minggu ${i+1}: ${m.t}</b><p class="mu">${m.l.filter((_,j)=>P.d[i+'-'+j]).length}/4 materi, bukti praktik ${P.pr[i]?'terverifikasi':'belum'}, kuis ${P.q['m'+i]!=null?'terbaik '+P.q['m'+i]+'%':'belum dikerjakan'}${lk?' (selesaikan minggu sebelumnya)':''}</p></div></div>`});
+let h=`<div class="row" style="justify-content:space-between;align-items:center;margin:0 0 10px"><span class="tg">${esc(U.email)}</span><button class="g cp" onclick="db.auth.signOut()">Keluar</button></div><h1>YAWIN SaaS Academy</h1><p class="mu">Halo, ${esc(fn())}! ${motiv(p)}</p><div class="pb"><i style="width:${p}%"></i></div><p class="tg">${p}% selesai</p>${cta()}<div class="rail">`;
+M.forEach((m,i)=>{const ok=qOK(i),lk=i>0&&!qOK(i-1);h+=`<div class="st ${ok?'on':''} ${i===cur?'cur':''} ${lk?'lk':''}"><div class="c" ${lk?'':`onclick="go('m${i}')"`}><b>${IC[i]} Minggu ${i+1}: ${m.t}</b><p class="mu">${m.l.filter((_,j)=>P.d[i+'-'+j]).length}/4 materi, bukti praktik ${P.pr[i]?'terverifikasi':'belum'}, kuis ${P.q['m'+i]!=null?'terbaik '+P.q['m'+i]+'%':'belum dikerjakan'}${lk?' (selesaikan minggu sebelumnya)':''}</p></div></div>`});
 h+=`<div class="st ${pOK()?'on':''} ${allQ()?'':'lk'}"><div class="c" ${allQ()?`onclick="go('pj')"`:''}><b>Proyek akhir: SaaS mini</b><p class="mu">${pOK()?'Lulus':allQ()?'Kirim proyek untuk diperiksa server':'Terbuka setelah semua kuis lulus'}</p></div></div>`;
 h+=`<div class="st ${fOK()?'on':''} ${allQ()&&pOK()?'':'lk'}"><div class="c" ${allQ()&&pOK()?`onclick="start('f')"`:''}><b>Ujian akhir (8 soal, nilai minimal 80)</b><p class="mu">${P.q.f!=null?'Nilai terbaik '+P.q.f+'%':'Belum dikerjakan'}</p></div></div>`;
 h+=`<div class="st ${P.cert?'on':fOK()?'':'lk'}"><div class="c" ${fOK()?`onclick="go('cert')"`:''}><b>Sertifikat kelulusan</b><p class="mu">${P.cert?'Sudah terbit, ID '+esc(P.cert.id):fOK()?'Selamat, terbitkan sertifikat Anda':'Terbuka setelah ujian akhir lulus'}</p></div></div></div>`;return h}
 function vbox(i){const q=(P.proofs.find(p=>p.module_idx===i)||{}).question||'';const h=`<div class="c"><b>Bukti: ${esc(q)}</b>`;if(P.pr[i])return h+'<div class="bn p">Terverifikasi oleh server. Anda sudah menjalankan contoh ini.</div></div>';return h+`<input type="text" id="v${i}" placeholder="Jawaban Anda"><div class="row"><button onclick="vf(${i})">Periksa jawaban</button></div></div>`}
-function mod(i){const m=M[i],all=mDone(i);let h=`<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>Minggu ${i+1}: ${m.t}</h2><p class="mu">Centang setiap materi setelah Anda benar-benar memahaminya.</p>`;
-m.l.forEach(([t,d],j)=>h+=`<label class="c l"><input type="checkbox" ${P.d[i+'-'+j]?'checked':''} onchange="tg(${i},${j})"><span><b>${t}</b><br><span class="mu">${d}</span></span></label>`);
+function mod(i){const m=M[i],all=mDone(i);let h=`<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>Minggu ${i+1}: ${m.t}</h2>${m.r?'<p class="mu">Buka tiap materi, baca sampai selesai, lalu jawab cek pemahaman untuk menyelesaikannya.</p>':'<p class="mu">Materi minggu ini masih berupa ringkasan, materi lengkap menyusul. Centang setelah Anda benar-benar memahaminya.</p>'}`;
+m.l.forEach(([t,d],j)=>{if(m.r){const dn=P.d[i+'-'+j];h+=`<div class="c lesson ${dn?'dn':''}" onclick="go('r${i}-${j}')"><div class="lb">${dn?'✅':'📖'}</div><div><b>${t}</b><p class="mu">${d}</p><p class="tg">⏱ ${rt(m.r[j])} menit baca · ${dn?'Selesai':'Belum dibaca'}</p></div></div>`}else h+=`<label class="c l"><input type="checkbox" ${P.d[i+'-'+j]?'checked':''} onchange="tg(${i},${j})"><span><b>${t}</b><br><span class="mu">${d}</span></span></label>`});
 h+=`<h2 style="margin-top:22px">Contoh praktik: tiru dulu</h2><p class="mu">Salin atau ketik kode di bawah, jalankan sendiri, dan pastikan hasilnya sama sebelum lanjut.</p>`;
 m.x.forEach(([t,k,n],j)=>{h+=`<div class="c" style="margin:10px 0"><b>Langkah ${j+1}: ${t}</b><pre>${esc(k)}</pre><button class="cp g" onclick="cp(${i},${j},this)">Salin kode</button><p class="mu">${n}</p></div>`});
 h+=vbox(i)+`<div class="c" style="margin-top:12px"><b>Tantangan mandiri</b><p class="mu">${m.p}</p></div><div class="row"><button ${all?'':'disabled'} onclick="start('m${i}')">${all?'Mulai kuis (lulus 70%)':'Selesaikan materi dan bukti praktik untuk membuka kuis'}</button></div>`;return h}
@@ -255,8 +388,8 @@ return h+`<div class="row"><button onclick="sp()">Kirim proyek</button></div>`}
 function cert(){const c=P.cert;if(!c)return `<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>Terbitkan sertifikat</h2><p class="mu">Tulis nama lengkap sesuai yang ingin dicantumkan di sertifikat.</p><input type="text" id="cn2" placeholder="Nama lengkap" value="${esc((U.user_metadata||{}).full_name||'')}"><div class="row"><button onclick="ic()">Terbitkan sertifikat</button></div>`;
 const dt=new Date(c.issued_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
 return `<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>Sertifikat kelulusan</h2><div id="cert"><p>YAWIN SaaS Academy</p><h2>Sertifikat Kelulusan</h2><p>Diberikan kepada</p><div class="nm">${esc(c.full_name)}</div><p>yang telah menyelesaikan program 4 minggu<br><b>Dasar Coding, Database, dan Pembuatan Aplikasi SaaS</b><br>dengan lulus seluruh kuis, proyek akhir, dan ujian akhir.</p><p style="font-size:13px">Tanggal ${dt} &nbsp;|&nbsp; ID ${esc(c.id)}</p></div><p class="mu">Keaslian sertifikat ini bisa diperiksa siapa saja lewat kolom Verifikasi sertifikat di halaman masuk, dengan memasukkan ID di atas.</p><div class="row"><button onclick="window.print()">Cetak atau simpan PDF</button></div>`}
-function render(){let h;if(!READY)h='<p class="mu" style="padding:30px 0"><span class="spn"></span>Memuat…</p>';else if(!U)h=auth();else h=V==='home'?home():V==='quiz'?quiz():V==='pj'?pj():V==='cert'?cert():mod(+V.slice(1));const m=MSG?`<div class="bn ${/berhasil/i.test(MSG)?'p':'f'}">${esc(MSG)}</div>`:'';$('#app').innerHTML=m+h}
-const AM={signup:'Mendaftarkan akun…',signin:'Sedang masuk…',vcert:'Memeriksa sertifikat…',tg:'Menyimpan…',vf:'Memeriksa jawaban…',start:'Menyiapkan soal…',sub:'Menilai jawaban…',sp:'Memeriksa proyek…',ic:'Menerbitkan sertifikat…'};
+function render(){let h;if(!READY)h='<p class="mu" style="padding:30px 0"><span class="spn"></span>Memuat…</p>';else if(!U)h=auth();else h=V[0]==='r'?reader():V==='home'?home():V==='quiz'?quiz():V==='pj'?pj():V==='cert'?cert():mod(+V.slice(1));const m=MSG?`<div class="bn ${/berhasil/i.test(MSG)?'p':'f'}">${esc(MSG)}</div>`:'';$('#app').innerHTML=m+h}
+const AM={fin:'Menyimpan progres…',signup:'Mendaftarkan akun…',signin:'Sedang masuk…',vcert:'Memeriksa sertifikat…',tg:'Menyimpan…',vf:'Memeriksa jawaban…',start:'Menyiapkan soal…',sub:'Menilai jawaban…',sp:'Memeriksa proyek…',ic:'Menerbitkan sertifikat…'};
 let LB=null,BUSY=false;
 addEventListener('click',e=>{LB=e.target.closest('button,label.l')},true);
 addEventListener('change',e=>{LB=e.target.closest('label.l')},true);
