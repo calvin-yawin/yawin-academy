@@ -318,10 +318,17 @@ const rt=R=>Math.max(2,Math.round([R.g,R.a,...R.s.map(x=>x[1]),...R.k].join(" ")
 const fn=()=>{const n=((U.user_metadata||{}).full_name||'').trim().split(' ')[0];return n||U.email.split('@')[0]};
 const motiv=p=>p===0?'Yuk mulai langkah pertama hari ini.':p<50?'Bagus, terus lanjutkan!':p<100?'Sedikit lagi menuju sertifikat!':'Selamat, Anda lulus!';
 let SLT=null;
-function sl(v){P.last=v;try{localStorage.setItem('yawin_last_'+U.id,v)}catch(e){}clearTimeout(SLT);SLT=setTimeout(()=>{db.from('profiles').update({last_view:v}).eq('id',U.id).then(()=>{},()=>{})},700)}
+function sl(v,keep){if(!keep)P.lastScroll=0;P.last=v;try{localStorage.setItem('yawin_last_'+U.id,v);localStorage.setItem('yawin_scroll_'+U.id,P.lastScroll||0)}catch(e){}clearTimeout(SLT);SLT=setTimeout(flush,700)}
+let SST=null,RST=0;
+function ss(){if(!U||V[0]!=='r'||Date.now()<RST)return;const d=document.documentElement,pc=Math.round(Math.min(100,Math.max(0,scrollY/Math.max(1,d.scrollHeight-innerHeight)*100)));P.last=V;P.lastScroll=pc;try{localStorage.setItem('yawin_last_'+U.id,V);localStorage.setItem('yawin_scroll_'+U.id,pc)}catch(e){}clearTimeout(SST);SST=setTimeout(flush,1200)}
+function flush(){if(!U||!P.last)return;db.from('profiles').update({last_view:P.last,last_scroll:P.lastScroll||0}).eq('id',U.id).then(()=>{},()=>{})}
+function lsScroll(){try{return +localStorage.getItem('yawin_scroll_'+U.id)||0}catch(e){return 0}}
+function goR(v){const p=P.lastScroll||0;RST=Date.now()+900;go(v,true);P.lastScroll=p;if(p>0&&v[0]==='r')requestAnimationFrame(()=>{const d=document.documentElement;scrollTo({top:p/100*Math.max(0,d.scrollHeight-innerHeight),behavior:'smooth'})})}
+addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
+addEventListener('pagehide',flush);
 function lsGet(){try{return localStorage.getItem('yawin_last_'+U.id)}catch(e){return null}}
 function lastOK(){const v=P.last;if(!v||!/^(r[0-9]-[0-9]|m[0-9])$/.test(v))return null;const i=+v[1],j=v[0]==='r'?+v[3]:-1;if(!M[i]||(j>=0&&!(M[i].l[j]&&M[i].r)))return null;return {v,i,j}}
-function resume(){const L=lastOK();if(!L)return '';const t=L.j>=0?`Minggu ${L.i+1} · Materi ${L.j+1}: ${M[L.i].l[L.j][0]}`:`Minggu ${L.i+1}: ${M[L.i].t}`;return `<div class="c resume"><p class="tg">▶️ Lanjutkan dari sini</p><b>${t}</b><div class="row"><button onclick="go('${L.v}')">Lanjutkan belajar →</button></div></div>`}
+function resume(){const L=lastOK();if(!L)return '';const t=L.j>=0?`Minggu ${L.i+1} · Materi ${L.j+1}: ${M[L.i].l[L.j][0]}`:`Minggu ${L.i+1}: ${M[L.i].t}`;return `<div class="c resume"><p class="tg">▶️ Lanjutkan dari sini</p><b>${t}</b>${L.j>=0&&P.lastScroll>0?`<p class="mu">Terakhir berhenti sekitar ${P.lastScroll}% halaman</p>`:''}<div class="row"><button onclick="goR('${L.v}')">Lanjutkan belajar →</button></div></div>`}
 function cta(){let t,a;const i=M.findIndex((_,x)=>!qOK(x));const L=lastOK();if(i>=0&&L&&L.i===i)return '';if(i>=0){t='Lanjut belajar: Minggu '+(i+1);a="go('m"+i+"')"}else if(!pOK()){t='Kerjakan proyek akhir';a="go('pj')"}else if(!fOK()){t='Mulai ujian akhir';a="start('f')"}else if(!P.cert){t='Ambil sertifikat';a="go('cert')"}else return '';return `<div class="row"><button onclick="${a}">${t} →</button></div>`}
 function boom(){const c=['#f59e0b','#fbbf24','#0f766e','#f97316','#fde68a','#2dd4bf'];for(let n=0;n<40;n++){const d=document.createElement('i');d.className='cf';d.style.cssText=`left:${Math.random()*100}vw;background:${c[n%6]};animation-delay:${Math.random()*.4}s;animation-duration:${1.5+Math.random()*1.3}s`;document.body.appendChild(d);setTimeout(()=>d.remove(),3500)}}
 function pickR(k,n){if(RK[k])return;const [i,j]=k.split('-').map(Number);RA[k]=n;if(n===M[i].r[j].q.a)RK[k]=true;keep()}
@@ -341,26 +348,26 @@ if(!dn)h+=`<button ${ok?'':'disabled'} onclick="fin(${i},${j})">${ok?'Selesai me
 else if(last)h+=`<button onclick="go('m${i}')">Lanjut ke contoh praktik →</button>`;
 else h+=`<button onclick="go('r${i}-${j+1}')">Materi berikutnya →</button>`;
 return h+'</div>'}
-addEventListener('scroll',()=>{const e=document.getElementById('rp');if(!e)return;const d=document.documentElement;e.style.width=Math.min(100,scrollY/Math.max(1,d.scrollHeight-innerHeight)*100)+'%'},{passive:true});
+addEventListener('scroll',()=>{const e=document.getElementById('rp');if(!e)return;const d=document.documentElement;e.style.width=Math.min(100,scrollY/Math.max(1,d.scrollHeight-innerHeight)*100)+'%';ss()},{passive:true});
 const SB_URL='https://syegjfqhbxuvzuxgjhob.supabase.co',SB_KEY='sb_publishable_PQRgCtM1RYEA-jNcMY7eMQ_vfOOfi3S';
 const db=supabase.createClient(SB_URL,SB_KEY);
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const blank=()=>({d:{},pr:{},q:{},pj:null,cert:null,proofs:[]});
 let U=null,P=blank(),PD={c:[],u:'',t:'',r:''},PS=null,V='home',A=null,MSG='',VR='',READY=false;
 async function load(){
-const r=await Promise.all([db.from('lesson_progress').select('module_idx,lesson_idx'),db.from('practice_proofs').select('module_idx'),db.from('quiz_results').select('scope,best_score'),db.from('project_submissions').select('*').maybeSingle(),db.from('certificates').select('*').maybeSingle(),db.rpc('get_proofs'),db.from('profiles').select('last_view').maybeSingle()]);
+const r=await Promise.all([db.from('lesson_progress').select('module_idx,lesson_idx'),db.from('practice_proofs').select('module_idx'),db.from('quiz_results').select('scope,best_score'),db.from('project_submissions').select('*').maybeSingle(),db.from('certificates').select('*').maybeSingle(),db.rpc('get_proofs'),db.from('profiles').select('last_view,last_scroll').maybeSingle()]);
 P=blank();
 (r[0].data||[]).forEach(x=>P.d[x.module_idx+'-'+x.lesson_idx]=1);
 (r[1].data||[]).forEach(x=>P.pr[x.module_idx]=1);
 (r[2].data||[]).forEach(x=>P.q[x.scope]=x.best_score);
-P.pj=r[3].data;P.cert=r[4].data;P.proofs=r[5].data||[];P.last=(r[6]&&r[6].data&&r[6].data.last_view)||lsGet();
+P.pj=r[3].data;P.cert=r[4].data;P.proofs=r[5].data||[];{const d6=r[6]&&r[6].data;P.last=(d6&&d6.last_view)||lsGet();P.lastScroll=d6&&d6.last_view?(d6.last_scroll||0):lsScroll()}
 if(P.pj)PD={c:P.pj.checks||[],u:P.pj.url||'',t:P.pj.tables_text||'',r:P.pj.policy_text||''}}
 const tr=m=>{m=String(m||'');let x=m.match(/after (\d+) seconds/);if(x)return 'Demi keamanan, permintaan ini baru bisa diulang setelah '+x[1]+' detik. Tunggu sebentar lalu coba lagi.';if(/Invalid login/i.test(m))return 'Email atau kata sandi salah.';if(/already registered/i.test(m))return 'Email ini sudah terdaftar. Silakan masuk.';if(/not confirmed/i.test(m))return 'Email belum dikonfirmasi. Cek kotak masuk Anda.';if(/rate limit/i.test(m))return 'Batas pengiriman email tercapai. Tunggu beberapa menit lalu coba lagi.';if(/invalid format|valid email/i.test(m))return 'Format email tidak valid.';if(/at least \d+ char/i.test(m))return 'Kata sandi minimal 6 karakter.';if(/failed to fetch|network/i.test(m))return 'Tidak ada koneksi internet. Coba lagi.';return m};
 async function rpc(fn,args){const {data,error}=await db.rpc(fn,args);if(error){MSG=tr(error.message);render();scrollTo(0,0);return null}MSG='';return data}
 const mDone=i=>M[i].l.every((_,j)=>P.d[i+'-'+j])&&!!P.pr[i];
 const qOK=i=>(P.q['m'+i]||0)>=70,allQ=()=>M.every((_,i)=>qOK(i)),pOK=()=>!!(P.pj&&P.pj.passed),fOK=()=>(P.q.f||0)>=80;
 function pct(){let n=0;M.forEach((_,i)=>{n+=M[i].l.filter((_,j)=>P.d[i+'-'+j]).length+(P.pr[i]?1:0)+(qOK(i)?1:0)});return Math.round((n+(pOK()?1:0)+(fOK()?1:0))/26*100)}
-function go(v){V=v;A=null;MSG='';if(/^(r[0-9]-[0-9]|m[0-9])$/.test(v)&&U)sl(v);render();scrollTo(0,0)}
+function go(v,K){V=v;A=null;MSG='';if(/^(r[0-9]-[0-9]|m[0-9])$/.test(v)&&U)sl(v,K);render();scrollTo(0,0)}
 function keep(){const y=scrollY;render();scrollTo(0,y)}
 async function signup(){const nm=$('#nm').value.trim(),em=$('#em').value.trim(),pw=$('#pw').value;const back=()=>{render();$('#nm').value=nm;$('#em').value=em};if(!em||!pw){MSG='Isi email dan kata sandi terlebih dulu.';back();return}if(pw.length<6){MSG='Kata sandi minimal 6 karakter.';back();return}const {data,error}=await db.auth.signUp({email:em,password:pw,options:{data:{full_name:nm},emailRedirectTo:location.protocol.startsWith('http')?location.href.split(/[?#]/)[0]:undefined}});MSG=error?tr(error.message):(data.session?'':'Pendaftaran berhasil. Cek email Anda untuk konfirmasi, lalu masuk.');back()}
 async function signin(){const em=$('#em').value.trim(),pw=$('#pw').value;const back=()=>{render();$('#em').value=em};if(!em||!pw){MSG='Isi email dan kata sandi terlebih dulu.';back();return}const {error}=await db.auth.signInWithPassword({email:em,password:pw});if(error){MSG=tr(error.message);back()}}
