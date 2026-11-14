@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>YAWIN SaaS Academy</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#f59e0b">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="YAWIN Academy">
+<link rel="apple-touch-icon" href="icon-192.png">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fbf6ec;--sf:#fffdf8;--tx:#2a1f12;--mu:#6f6150;--ac:#f59e0b;--on:#2a1503;--lk:#b45309;--hl:#0f766e;--g1:#a16207;--g2:#d4960a;--g3:#f8d35e;--bd:#eadfc9;--ok:#15803d;--no:#b42318;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16110a;--sf:#211a10;--tx:#f6ecd9;--mu:#b3a58c;--ac:#fbbf24;--on:#2a1503;--lk:#fbbf24;--hl:#2dd4bf;--g1:#d97706;--g2:#fbbf24;--g3:#fff0b3;--bd:#3a2f1e;--ok:#4ade80;--no:#f87171;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16110a;--sf:#211a10;--tx:#f6ecd9;--mu:#b3a58c;--ac:#fbbf24;--on:#2a1503;--lk:#fbbf24;--hl:#2dd4bf;--g1:#d97706;--g2:#fbbf24;--g3:#fff0b3;--bd:#3a2f1e;--ok:#4ade80;--no:#f87171;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 'Bricolage Grotesque',system-ui,sans-serif}
+.w{max-width:760px;margin:0 auto;padding:22px 16px 70px}
+h1{font-size:clamp(28px,6vw,40px);line-height:1.1;margin:0 0 6px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:22px;margin:0 0 8px;font-weight:800}
+p{margin:6px 0}.mu{color:var(--mu);font-size:14px}
+.pb{height:10px;background:var(--bd);border-radius:9px;overflow:hidden;margin:14px 0 4px}
+.pb i{display:block;height:100%;background:var(--ac);transition:width .4s}
+.rail{border-left:3px solid var(--bd);margin:18px 0 0 10px;padding-left:18px}
+.rail .st{position:relative;margin-bottom:14px}
+.rail .st:before{content:"";position:absolute;left:-28px;top:18px;width:15px;height:15px;border-radius:50%;background:var(--bg);border:3px solid var(--bd)}
+.rail .st.on:before{background:var(--ac);border-color:var(--ac)}
+.rail .st.cur:before{border-color:var(--hl)}
+.c{background:var(--sf);border:1px solid var(--bd);border-radius:12px;padding:14px 16px}
+.st .c{cursor:pointer}.st.lk .c{opacity:.55;cursor:default}
+.l{display:flex;gap:12px;align-items:flex-start;margin:8px 0;cursor:pointer}
+.l input{width:22px;height:22px;margin-top:2px;accent-color:var(--ac);flex:none}
+button,.btn{font:inherit;font-weight:600;background:var(--ac);color:var(--on);border:0;border-radius:9px;padding:10px 18px;cursor:pointer}
+button.g{background:transparent;color:var(--lk);border:1.5px solid var(--lk)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:3px solid var(--hl);outline-offset:2px}
+.o{display:block;width:100%;text-align:left;background:var(--sf);color:var(--tx);border:1.5px solid var(--bd);margin:6px 0;font-weight:400}
+.o.s{border-color:var(--ac);background:color-mix(in srgb,var(--ac) 14%,transparent)}
+.o.ok{border-color:var(--ok)}.o.no{border-color:var(--no)}
+.ex{font-size:14px;color:var(--mu);border-left:3px solid var(--hl);padding-left:10px;margin-top:8px}
+.bn{padding:12px 14px;border-radius:10px;font-weight:600;margin:12px 0}
+.bn.p{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.bn.f{background:color-mix(in srgb,var(--no) 16%,transparent);color:var(--no)}
+input[type=text],input[type=url],input[type=email],input[type=password],textarea{font:inherit;width:100%;padding:10px 12px;border:1.5px solid var(--bd);border-radius:9px;background:var(--bg);color:var(--tx);margin-top:6px}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.tg{font-size:13px;font-weight:600;color:var(--mu)}
+#cert{background:#fffaf0;color:#2a1f12;border:6px double #b9860b;padding:34px 22px;text-align:center;font-family:Georgia,serif;margin-top:14px}
+#cert h2{font-size:30px;margin:10px 0}
+#cert .nm{font-size:32px;font-style:italic;border-bottom:2px solid #b9860b;display:inline-block;padding:0 14px;margin:10px 0}
+#cert p{color:#5a4a35}
+a.bk{color:var(--lk);cursor:pointer;font-weight:600;display:inline-block;margin-bottom:10px}
+pre{background:#241a0d;color:#f6ecd9;border-radius:10px;padding:12px;overflow-x:auto;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;margin:8px 0}
+.cp{padding:6px 12px;font-size:13px}
+@media print{body *{visibility:hidden}#cert,#cert *{visibility:visible}#cert{position:absolute;left:0;top:0;width:100%}}
+
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes bar{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.spn{display:inline-block;width:20px;height:20px;border:3px solid var(--ac);border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite;vertical-align:-4px;margin-right:10px}
+button.ld{position:relative;color:transparent!important;pointer-events:none}
+button.ld::after{content:"";position:absolute;inset:0;margin:auto;width:18px;height:18px;border:3px solid var(--on);border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite}
+button.g.ld::after{border-color:var(--lk);border-top-color:transparent}
+label.l.ld{opacity:.6}
+label.l.ld::after{content:"";flex:none;align-self:center;width:16px;height:16px;border:3px solid var(--ac);border-top-color:transparent;border-radius:50%;animation:sp .7s linear infinite}
+body.busy button,body.busy label.l{pointer-events:none}
+body.busy::before{content:"";position:fixed;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,transparent,var(--ac),transparent);animation:bar 1s linear infinite;z-index:99}
+body.busy::after{content:attr(data-m);position:fixed;bottom:calc(18px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--sf);color:var(--tx);border:1px solid var(--bd);border-radius:99px;padding:8px 18px;font-weight:600;font-size:14px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:99;white-space:nowrap}
+
+h1{background:linear-gradient(100deg,var(--g1) 0%,var(--g2) 30%,var(--g3) 50%,var(--g2) 70%,var(--g1) 100%);background-size:200% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;animation:shine 6s linear infinite;filter:drop-shadow(0 1px 1px rgba(120,70,0,.28));padding-bottom:2px}
+@keyframes shine{from{background-position:0% 0}to{background-position:200% 0}}
+@media(prefers-reduced-motion:reduce){h1{animation:none}}
+</style></head><body><div class="w" id="app"></div>
+<script>
+const M=[
+{t:'Fondasi coding dan cara kerja web',l:[
+['Cara kerja internet','Browser (client) mengirim request, server membalas dengan response. Hampir semua aplikasi bekerja dengan pola ini.'],
+['API dan JSON','API adalah pintu komunikasi antar sistem. Datanya biasanya berbentuk JSON: pasangan nama dan nilai.'],
+['Logika pemrograman','Variabel menyimpan nilai, if/else membuat keputusan, loop mengulang, function membungkus langkah yang bisa dipakai ulang.'],
+['Git dan GitHub','Git menyimpan riwayat perubahan kode lewat commit. Branch dan pull request dipakai untuk bekerja bersama dengan aman.']],
+x:[['Panggil API publik dan tampilkan datanya',`<!DOCTYPE html>
+<html><body>
+<h3>Daftar Pengguna</h3>
+<ul id="daftar"></ul>
+<script>
+fetch("https://jsonplaceholder.typicode.com/users")
+  .then(res => res.json())
+  .then(data => {
+    data.forEach(u => {
+      document.getElementById("daftar").innerHTML += "<li>" + u.name + " - " + u.email + "</li>";
+    });
+  });
+<\/script>
+</body></html>`,'Simpan sebagai index.html, lalu buka di browser. Anda akan melihat 10 nama pengguna. Ini adalah request ke server dan response berbentuk JSON.'],
+['Simpan ke Git',`git init
+git add .
+git commit -m "latihan pertama: panggil API"`,'Jalankan di terminal pada folder yang sama. Lalu buat repository di GitHub dan push dengan perintah yang ditampilkan GitHub.'],
+['Ubah sedikit lalu commit lagi',`// Ganti baris data.forEach menjadi ini agar hanya 3 pengguna pertama tampil:
+data.slice(0, 3).forEach(u => {`,'Muat ulang browser dan pastikan hanya 3 nama tampil. Lalu jalankan git add . dan git commit lagi dengan pesan baru.']],p:'Panggil API lain (misalnya data cuaca atau kurs), tampilkan 5 data di halaman, dan simpan kodenya di GitHub.',},
+{t:'Database dan SQL',l:[
+['Tabel, kolom, dan key','Primary key mengenali tiap baris secara unik. Foreign key menunjuk ke baris di tabel lain.'],
+['Jenis relasi','One-to-one, one-to-many (satu user banyak order), dan many-to-many yang butuh tabel penghubung.'],
+['SQL dasar dan JOIN','SELECT, INSERT, UPDATE, DELETE, WHERE, GROUP BY. JOIN menggabungkan data dari beberapa tabel.'],
+['Row Level Security','RLS membatasi baris mana yang boleh dibaca atau diubah tiap user, langsung di level database.']],
+x:[['Buat tabel dan relasi',`create table organizations (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  created_at timestamptz default now()
+);
+
+create table members (
+  user_id uuid references auth.users(id) on delete cascade,
+  organization_id uuid references organizations(id) on delete cascade,
+  role text default 'member',
+  primary key (user_id, organization_id)
+);
+
+create table projects (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid references organizations(id) on delete cascade,
+  title text not null,
+  status text default 'baru'
+);`,'Buka Supabase, masuk ke SQL Editor, tempel, lalu Run. Cek di Table Editor bahwa tiga tabel sudah muncul.'],
+['Isi data dan gabungkan dengan JOIN',`insert into organizations (name) values ('Toko A'), ('Toko B');
+
+insert into projects (organization_id, title)
+select id, 'Proyek pertama' from organizations;
+
+select o.name, p.title, p.status
+from projects p
+join organizations o on o.id = p.organization_id;`,'Hasil query terakhir harus menampilkan dua baris: satu per organisasi.'],
+['Aktifkan Row Level Security',`alter table projects enable row level security;
+
+create policy "baca proyek organisasi sendiri" on projects
+for select using (
+  organization_id in (
+    select organization_id from members where user_id = auth.uid()
+  )
+);`,'Setelah RLS aktif, user yang belum menjadi member tidak melihat proyek apa pun. Itu tandanya RLS bekerja.']],p:'Rancang skema 4 tabel untuk produk Anda sendiri dan tulis 15 query SQL sendiri (SELECT, JOIN, GROUP BY).',},
+{t:'Membangun aplikasi lengkap',l:[
+['Authentication dan authorization','Authentication memastikan siapa user. Authorization menentukan apa yang boleh dia lakukan.'],
+['CRUD dari ujung ke ujung','Create, Read, Update, Delete: form mengirim data ke API, tersimpan di database, lalu tampil kembali di layar.'],
+['Environment variable dan keamanan','Secret key disimpan di environment variable di server. Jangan pernah menaruhnya di kode frontend atau GitHub publik.'],
+['Deploy','Deploy menayangkan aplikasi ke internet, misalnya lewat Vercel atau Netlify, lengkap dengan domain sendiri.']],
+x:[['Hubungkan halaman web ke Supabase',`<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
+<script>
+const db = supabase.createClient("URL_PROYEK_ANDA", "ANON_PUBLIC_KEY_ANDA");
+
+async function masuk(email, password) {
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if (error) alert(error.message);
+}
+async function tambah(judul) {
+  const { error } = await db.from("projects").insert({ title: judul });
+  if (error) alert(error.message);
+}
+async function baca() {
+  const { data } = await db.from("projects").select("*");
+  console.log(data);
+}
+<\/script>`,'Ambil URL dan anon public key di Supabase (Project Settings, API). Pakai hanya anon key di frontend, jangan pernah service_role key.'],
+['Simpan rahasia di environment variable',`# file .env (jangan di-commit)
+SUPABASE_URL=isi_url_anda
+SUPABASE_ANON_KEY=isi_key_anda
+
+# file .gitignore
+.env`,'Pastikan .env masuk .gitignore sebelum git add. Coba cek di GitHub bahwa file .env tidak ikut ter-upload.'],
+['Deploy ke internet',`1. Push project ke GitHub
+2. Buka vercel.com, login dengan GitHub
+3. Klik Add New Project, pilih repository Anda
+4. Isi environment variable yang sama
+5. Klik Deploy`,'Setelah selesai, Anda mendapat link publik. Buka dari HP dan coba login serta tambah data.']],p:'Bangun app sendiri dengan login dan CRUD untuk satu jenis data, deploy, lalu uji dengan 2 sampai 3 orang.',},
+{t:'Konsep khusus SaaS',l:[
+['Multi-tenancy','Satu aplikasi melayani banyak organisasi (tenant) dengan data yang terpisah. Ini pembeda utama SaaS.'],
+['Role dan permission','Owner, admin, dan member punya hak berbeda. Aturannya dicek di backend, bukan hanya disembunyikan di UI.'],
+['Subscription dan billing','Plan, trial, upgrade/downgrade. Di Indonesia gunakan Midtrans atau Xendit. Status pembayaran diperbarui lewat webhook.'],
+['Metrik SaaS','MRR (pendapatan berulang bulanan), churn (pelanggan yang berhenti), CAC, LTV, dan activation.']],
+x:[['Tambahkan plan ke organisasi',`alter table organizations add column plan text default 'free';
+
+update organizations set plan = 'free';`,'Setiap organisasi sekarang punya plan. Cek hasilnya di Table Editor.'],
+['Batasi plan Free di database',`create or replace function cek_batas_proyek() returns trigger as $$
+begin
+  if (select plan from organizations where id = new.organization_id) = 'free'
+     and (select count(*) from projects where organization_id = new.organization_id) >= 3 then
+    raise exception 'Plan Free dibatasi 3 proyek. Upgrade ke Pro.';
+  end if;
+  return new;
+end; $$ language plpgsql;
+
+create trigger batas_proyek before insert on projects
+for each row execute function cek_batas_proyek();`,'Tambahkan 3 proyek, lalu coba proyek ke-4. Anda akan mendapat pesan error. Aturan ini berlaku walau UI dilewati.'],
+['Simulasikan webhook pembayaran dan hitung MRR',`-- Anggap webhook mengabarkan pembayaran sukses
+update organizations set plan = 'pro' where name = 'Toko A';
+
+-- Sekarang proyek ke-4 untuk Toko A akan berhasil
+
+-- Hitung MRR jika plan Pro Rp99.000 per bulan
+select count(*) filter (where plan = 'pro') * 99000 as mrr_rupiah
+from organizations;`,'Di aplikasi nyata, perubahan plan dilakukan oleh server saat menerima webhook dari Midtrans atau Xendit, bukan manual.']],p:'Ubah app minggu 3 menjadi SaaS mini: organisasi, role, plan Free/Pro, dan pembayaran sandbox Midtrans atau Xendit.',}];
+const PJ=['Database punya minimal 4 tabel berelasi (misalnya organizations, members, projects, subscriptions)','Daftar dan login berfungsi','RLS memisahkan data tiap organisasi','Ada plan Free dan Pro dengan batasan fitur','Pembayaran sandbox terhubung dan aplikasi sudah di-deploy ke link publik'];
+const SB_URL='https://syegjfqhbxuvzuxgjhob.supabase.co',SB_KEY='sb_publishable_PQRgCtM1RYEA-jNcMY7eMQ_vfOOfi3S';
+const db=supabase.createClient(SB_URL,SB_KEY);
+const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const blank=()=>({d:{},pr:{},q:{},pj:null,cert:null,proofs:[]});
+let U=null,P=blank(),PD={c:[],u:'',t:'',r:''},PS=null,V='home',A=null,MSG='',VR='',READY=false;
+async function load(){
+const r=await Promise.all([db.from('lesson_progress').select('module_idx,lesson_idx'),db.from('practice_proofs').select('module_idx'),db.from('quiz_results').select('scope,best_score'),db.from('project_submissions').select('*').maybeSingle(),db.from('certificates').select('*').maybeSingle(),db.rpc('get_proofs')]);
+P=blank();
+(r[0].data||[]).forEach(x=>P.d[x.module_idx+'-'+x.lesson_idx]=1);
+(r[1].data||[]).forEach(x=>P.pr[x.module_idx]=1);
+(r[2].data||[]).forEach(x=>P.q[x.scope]=x.best_score);
+P.pj=r[3].data;P.cert=r[4].data;P.proofs=r[5].data||[];
+if(P.pj)PD={c:P.pj.checks||[],u:P.pj.url||'',t:P.pj.tables_text||'',r:P.pj.policy_text||''}}
+const tr=m=>{m=String(m||'');let x=m.match(/after (\d+) seconds/);if(x)return 'Demi keamanan, permintaan ini baru bisa diulang setelah '+x[1]+' detik. Tunggu sebentar lalu coba lagi.';if(/Invalid login/i.test(m))return 'Email atau kata sandi salah.';if(/already registered/i.test(m))return 'Email ini sudah terdaftar. Silakan masuk.';if(/not confirmed/i.test(m))return 'Email belum dikonfirmasi. Cek kotak masuk Anda.';if(/rate limit/i.test(m))return 'Batas pengiriman email tercapai. Tunggu beberapa menit lalu coba lagi.';if(/invalid format|valid email/i.test(m))return 'Format email tidak valid.';if(/at least \d+ char/i.test(m))return 'Kata sandi minimal 6 karakter.';if(/failed to fetch|network/i.test(m))return 'Tidak ada koneksi internet. Coba lagi.';return m};
+async function rpc(fn,args){const {data,error}=await db.rpc(fn,args);if(error){MSG=tr(error.message);render();scrollTo(0,0);return null}MSG='';return data}
+const mDone=i=>M[i].l.every((_,j)=>P.d[i+'-'+j])&&!!P.pr[i];
+const qOK=i=>(P.q['m'+i]||0)>=70,allQ=()=>M.every((_,i)=>qOK(i)),pOK=()=>!!(P.pj&&P.pj.passed),fOK=()=>(P.q.f||0)>=80;
+function pct(){let n=0;M.forEach((_,i)=>{n+=M[i].l.filter((_,j)=>P.d[i+'-'+j]).length+(P.pr[i]?1:0)+(qOK(i)?1:0)});return Math.round((n+(pOK()?1:0)+(fOK()?1:0))/26*100)}
+function go(v){V=v;A=null;MSG='';render();scrollTo(0,0)}
+function keep(){const y=scrollY;render();scrollTo(0,y)}
+async function signup(){const nm=$('#nm').value.trim(),em=$('#em').value.trim(),pw=$('#pw').value;const back=()=>{render();$('#nm').value=nm;$('#em').value=em};if(!em||!pw){MSG='Isi email dan kata sandi terlebih dulu.';back();return}if(pw.length<6){MSG='Kata sandi minimal 6 karakter.';back();return}const {data,error}=await db.auth.signUp({email:em,password:pw,options:{data:{full_name:nm},emailRedirectTo:location.protocol.startsWith('http')?location.href.split(/[?#]/)[0]:undefined}});MSG=error?tr(error.message):(data.session?'':'Pendaftaran berhasil. Cek email Anda untuk konfirmasi, lalu masuk.');back()}
+async function signin(){const em=$('#em').value.trim(),pw=$('#pw').value;const back=()=>{render();$('#em').value=em};if(!em||!pw){MSG='Isi email dan kata sandi terlebih dulu.';back();return}const {error}=await db.auth.signInWithPassword({email:em,password:pw});if(error){MSG=tr(error.message);back()}}
+async function vcert(){const {data,error}=await db.rpc('verify_certificate',{p_id:$('#vc').value});VR=error?'<div class="bn f">'+esc(tr(error.message))+'</div>':data.valid?'<div class="bn p">Sertifikat VALID. Atas nama '+esc(data.full_name)+', terbit '+new Date(data.issued_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})+'.</div>':'<div class="bn f">Sertifikat tidak ditemukan.</div>';render()}
+async function tg(i,j){const k=i+'-'+j;if(P.d[k]){const {error}=await db.from('lesson_progress').delete().match({user_id:U.id,module_idx:i,lesson_idx:j});if(!error)delete P.d[k]}else{const {error}=await db.from('lesson_progress').insert({user_id:U.id,module_idx:i,lesson_idx:j});if(!error)P.d[k]=1}keep()}
+async function vf(i){const r=await rpc('verify_proof',{p_module:i,p_answer:$('#v'+i).value.trim()});if(r===null)return;if(r)P.pr[i]=1;else{MSG='Jawaban belum sesuai. Jalankan contohnya, lihat hasilnya dengan teliti, lalu coba lagi.'}keep()}
+async function start(k){const r=await rpc('start_quiz',{p_scope:k});if(!r)return;A={k,id:r.attempt_id,th:r.threshold,r:null,rev:null,qs:r.questions.map(q=>({...q,s:-1}))};V='quiz';render();scrollTo(0,0)}
+function pick(i,j){if(A.r!==null)return;A.qs[i].s=j;keep()}
+async function sub(){const ans={};A.qs.forEach(q=>ans[q.id]=q.options[q.s]);const r=await rpc('submit_quiz',{p_attempt:A.id,p_answers:ans});if(!r)return;A.r=r.score;A.rev={};r.review.forEach(x=>A.rev[x.id]=x);P.q[A.k]=Math.max(P.q[A.k]||0,r.score);render();scrollTo(0,0)}
+function tp(i){const c=PD.c,k=c.indexOf(i);k<0?c.push(i):c.splice(k,1);keep()}
+async function sp(){const r=await rpc('submit_project',{p_checks:PD.c,p_url:PD.u,p_tables:PD.t,p_policy:PD.r});if(!r)return;PS=r;P.pj={passed:r.passed};keep()}
+async function ic(){const r=await rpc('issue_certificate',{p_name:$('#cn2').value});if(r){P.cert={id:r.id,full_name:r.full_name,issued_at:r.issued_at};keep()}}
+function cp(i,k,b){const t=M[i].x[k][1];const ok=()=>{b.textContent='Tersalin'};const fb=()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){b.textContent='Salin manual'}a.remove()};try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
+function auth(){return `<h1>YAWIN SaaS Academy</h1><p class="mu">Masuk untuk menyimpan progres dan mendapatkan sertifikat yang bisa diverifikasi.</p><div class="c" style="margin-top:14px"><input type="text" id="nm" placeholder="Nama lengkap (untuk mendaftar)" autocomplete="name"><input type="email" id="em" placeholder="Email" autocomplete="email" style="margin-top:8px"><input type="password" id="pw" placeholder="Kata sandi (minimal 6 karakter)" autocomplete="current-password" style="margin-top:8px"><div class="row"><button onclick="signin()">Masuk</button><button class="g" onclick="signup()">Daftar</button></div></div><div class="c" style="margin-top:14px"><b>Verifikasi sertifikat</b><input type="text" id="vc" placeholder="YAWIN-XXXXXXXX"><div class="row"><button class="g" onclick="vcert()">Periksa</button></div>${VR}</div>`}
+function home(){const p=pct(),cur=M.findIndex((_,i)=>!qOK(i));
+let h=`<div class="row" style="justify-content:space-between;align-items:center;margin:0 0 10px"><span class="tg">${esc(U.email)}</span><button class="g cp" onclick="db.auth.signOut()">Keluar</button></div><h1>YAWIN SaaS Academy</h1><p class="mu">Kursus 4 minggu untuk memahami coding, database, dan pembuatan aplikasi SaaS. Penilaian dilakukan di server.</p><div class="pb"><i style="width:${p}%"></i></div><p class="tg">${p}% selesai</p><div class="rail">`;
+M.forEach((m,i)=>{const ok=qOK(i),lk=i>0&&!qOK(i-1);h+=`<div class="st ${ok?'on':''} ${i===cur?'cur':''} ${lk?'lk':''}"><div class="c" ${lk?'':`onclick="go('m${i}')"`}><b>Minggu ${i+1}: ${m.t}</b><p class="mu">${m.l.filter((_,j)=>P.d[i+'-'+j]).length}/4 materi, bukti praktik ${P.pr[i]?'terverifikasi':'belum'}, kuis ${P.q['m'+i]!=null?'terbaik '+P.q['m'+i]+'%':'belum dikerjakan'}${lk?' (selesaikan minggu sebelumnya)':''}</p></div></div>`});
+h+=`<div class="st ${pOK()?'on':''} ${allQ()?'':'lk'}"><div class="c" ${allQ()?`onclick="go('pj')"`:''}><b>Proyek akhir: SaaS mini</b><p class="mu">${pOK()?'Lulus':allQ()?'Kirim proyek untuk diperiksa server':'Terbuka setelah semua kuis lulus'}</p></div></div>`;
+h+=`<div class="st ${fOK()?'on':''} ${allQ()&&pOK()?'':'lk'}"><div class="c" ${allQ()&&pOK()?`onclick="start('f')"`:''}><b>Ujian akhir (8 soal, nilai minimal 80)</b><p class="mu">${P.q.f!=null?'Nilai terbaik '+P.q.f+'%':'Belum dikerjakan'}</p></div></div>`;
+h+=`<div class="st ${P.cert?'on':fOK()?'':'lk'}"><div class="c" ${fOK()?`onclick="go('cert')"`:''}><b>Sertifikat kelulusan</b><p class="mu">${P.cert?'Sudah terbit, ID '+esc(P.cert.id):fOK()?'Selamat, terbitkan sertifikat Anda':'Terbuka setelah ujian akhir lulus'}</p></div></div></div>`;return h}
+function vbox(i){const q=(P.proofs.find(p=>p.module_idx===i)||{}).question||'';const h=`<div class="c"><b>Bukti: ${esc(q)}</b>`;if(P.pr[i])return h+'<div class="bn p">Terverifikasi oleh server. Anda sudah menjalankan contoh ini.</div></div>';return h+`<input type="text" id="v${i}" placeholder="Jawaban Anda"><div class="row"><button onclick="vf(${i})">Periksa jawaban</button></div></div>`}
+function mod(i){const m=M[i],all=mDone(i);let h=`<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>Minggu ${i+1}: ${m.t}</h2><p class="mu">Centang setiap materi setelah Anda benar-benar memahaminya.</p>`;
+m.l.forEach(([t,d],j)=>h+=`<label class="c l"><input type="checkbox" ${P.d[i+'-'+j]?'checked':''} onchange="tg(${i},${j})"><span><b>${t}</b><br><span class="mu">${d}</span></span></label>`);
+h+=`<h2 style="margin-top:22px">Contoh praktik: tiru dulu</h2><p class="mu">Salin atau ketik kode di bawah, jalankan sendiri, dan pastikan hasilnya sama sebelum lanjut.</p>`;
+m.x.forEach(([t,k,n],j)=>{h+=`<div class="c" style="margin:10px 0"><b>Langkah ${j+1}: ${t}</b><pre>${esc(k)}</pre><button class="cp g" onclick="cp(${i},${j},this)">Salin kode</button><p class="mu">${n}</p></div>`});
+h+=vbox(i)+`<div class="c" style="margin-top:12px"><b>Tantangan mandiri</b><p class="mu">${m.p}</p></div><div class="row"><button ${all?'':'disabled'} onclick="start('m${i}')">${all?'Mulai kuis (lulus 70%)':'Selesaikan materi dan bukti praktik untuk membuka kuis'}</button></div>`;return h}
+function quiz(){let h=`<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>${A.k==='f'?'Ujian akhir':'Kuis minggu '+(+A.k.slice(1)+1)}</h2><p class="mu">Nilai minimal untuk lulus: ${A.th}%</p>`;
+A.qs.forEach((q,i)=>{const rv=A.rev&&A.rev[q.id];h+=`<div class="c" style="margin:10px 0"><b>${i+1}. ${esc(q.question)}</b>`;q.options.forEach((o,j)=>{let c='o';if(rv){if(o===rv.correct)c+=' ok';else if(j===q.s)c+=' no'}else if(j===q.s)c+=' s';h+=`<button class="${c}" onclick="pick(${i},${j})">${esc(o)}</button>`});if(rv)h+=`<div class="ex">${esc(rv.explanation)}</div>`;h+='</div>'});
+if(A.r===null)h+=`<div class="row"><button ${A.qs.some(q=>q.s<0)?'disabled':''} onclick="sub()">Kirim jawaban</button></div>`;
+else{const ok=A.r>=A.th;h=h.replace('</h2>',`</h2><div class="bn ${ok?'p':'f'}">Nilai Anda ${A.r}%. ${ok?'Lulus!':'Belum lulus, pelajari lagi dan coba kembali.'}</div>`);h+=`<div class="row"><button onclick="start('${A.k}')" class="g">Ulangi</button><button onclick="go('${ok&&A.k==='f'?'cert':'home'}')">${ok&&A.k==='f'?'Ambil sertifikat':'Lanjut'}</button></div>`}return h}
+function pj(){const st=(k,t)=>PS?`<p class="tg">${PS[k]?'Lolos':'Belum lolos'}: ${t}</p>`:'';
+let h=`<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>Proyek akhir: SaaS mini</h2><p class="mu">Isi semua bagian, lalu kirim. Server yang memeriksa checklist, link, nama tabel, dan policy RLS Anda.</p>`;
+PJ.forEach((t,i)=>h+=`<label class="c l"><input type="checkbox" ${PD.c.includes(i)?'checked':''} onchange="tp(${i})"><span>${t}</span></label>`);
+h+=`<div class="c" style="margin-top:12px"><b>Link aplikasi atau repository</b><p class="mu">Harus https dan berasal dari github.com, vercel.app, netlify.app, pages.dev, atau onrender.com.</p><input type="url" placeholder="https://" value="${esc(PD.u)}" oninput="PD.u=this.value">${st('url','link')}</div><div class="c" style="margin-top:12px"><b>Nama tabel yang Anda buat</b><p class="mu">Pisahkan dengan koma, minimal 4 nama berbeda.</p><input type="text" placeholder="organizations, members, projects, subscriptions" value="${esc(PD.t)}" oninput="PD.t=this.value">${st('tables','nama tabel')}</div><div class="c" style="margin-top:12px"><b>Tempel policy RLS yang Anda tulis</b><textarea rows="5" placeholder="create policy ... using (...)" oninput="PD.r=this.value">${esc(PD.r)}</textarea>${st('policy','policy RLS')}</div>`;
+h+=PS?`<div class="bn ${PS.passed?'p':'f'}">${PS.passed?'Proyek lulus. Lanjut ke ujian akhir.':'Proyek belum lulus. Perbaiki bagian yang belum lolos lalu kirim lagi.'}</div>`:'';
+return h+`<div class="row"><button onclick="sp()">Kirim proyek</button></div>`}
+function cert(){const c=P.cert;if(!c)return `<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>Terbitkan sertifikat</h2><p class="mu">Tulis nama lengkap sesuai yang ingin dicantumkan di sertifikat.</p><input type="text" id="cn2" placeholder="Nama lengkap" value="${esc((U.user_metadata||{}).full_name||'')}"><div class="row"><button onclick="ic()">Terbitkan sertifikat</button></div>`;
+const dt=new Date(c.issued_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+return `<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>Sertifikat kelulusan</h2><div id="cert"><p>YAWIN SaaS Academy</p><h2>Sertifikat Kelulusan</h2><p>Diberikan kepada</p><div class="nm">${esc(c.full_name)}</div><p>yang telah menyelesaikan program 4 minggu<br><b>Dasar Coding, Database, dan Pembuatan Aplikasi SaaS</b><br>dengan lulus seluruh kuis, proyek akhir, dan ujian akhir.</p><p style="font-size:13px">Tanggal ${dt} &nbsp;|&nbsp; ID ${esc(c.id)}</p></div><p class="mu">Keaslian sertifikat ini bisa diperiksa siapa saja lewat kolom Verifikasi sertifikat di halaman masuk, dengan memasukkan ID di atas.</p><div class="row"><button onclick="window.print()">Cetak atau simpan PDF</button></div>`}
+function render(){let h;if(!READY)h='<p class="mu" style="padding:30px 0"><span class="spn"></span>Memuat…</p>';else if(!U)h=auth();else h=V==='home'?home():V==='quiz'?quiz():V==='pj'?pj():V==='cert'?cert():mod(+V.slice(1));const m=MSG?`<div class="bn ${/berhasil/i.test(MSG)?'p':'f'}">${esc(MSG)}</div>`:'';$('#app').innerHTML=m+h}
+const AM={signup:'Mendaftarkan akun…',signin:'Sedang masuk…',vcert:'Memeriksa sertifikat…',tg:'Menyimpan…',vf:'Memeriksa jawaban…',start:'Menyiapkan soal…',sub:'Menilai jawaban…',sp:'Memeriksa proyek…',ic:'Menerbitkan sertifikat…'};
+let LB=null,BUSY=false;
+addEventListener('click',e=>{LB=e.target.closest('button,label.l')},true);
+addEventListener('change',e=>{LB=e.target.closest('label.l')},true);
+Object.keys(AM).forEach(n=>{const f=window[n];window[n]=async function(...a){if(BUSY)return;BUSY=true;const el=LB;if(el)el.classList.add('ld');document.body.dataset.m=AM[n];document.body.classList.add('busy');try{return await f.apply(this,a)}finally{BUSY=false;document.body.classList.remove('busy');if(MSG)scrollTo({top:0,behavior:'smooth'});setTimeout(()=>{if(el&&el.isConnected)el.classList.remove('ld')},300)}}});
+db.auth.onAuthStateChange((ev,s)=>{if(!['INITIAL_SESSION','SIGNED_IN','SIGNED_OUT'].includes(ev))return;U=s?s.user:null;if(U&&ev==='SIGNED_IN'){READY=false;render()}setTimeout(async()=>{if(U)await load();else{P=blank();V='home';A=null}READY=true;render()},0)});
+render();
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script></body></html>

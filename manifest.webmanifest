@@ -1,0 +1,17 @@
+{
+  "name": "YAWIN SaaS Academy",
+  "short_name": "YAWIN Academy",
+  "description": "Kursus coding, database, dan SaaS dengan kuis, proyek akhir, dan sertifikat.",
+  "lang": "id",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fbf6ec",
+  "theme_color": "#f59e0b",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}
