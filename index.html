@@ -288,15 +288,21 @@ r:[`Variabel menyimpan nilai dengan nama.`,`If dan else memilih jalur berdasarka
 s:[
 [`Masalah yang diselesaikan Git`,`Pernah punya berkas bernama <code>laporan_final_revisi_baru_FIX2.docx</code>? Itu masalah yang diselesaikan Git. Git mencatat riwayat perubahan kode, sehingga Anda bisa melihat apa yang berubah, kapan, dan oleh siapa, lalu kembali ke versi sebelumnya kalau ada yang rusak.`],
 [`Git dan GitHub itu berbeda`,`<b>Git</b> adalah program yang berjalan di komputer Anda untuk mencatat riwayat. <b>GitHub</b> adalah situs untuk menyimpan salinan proyek Git secara online, berbagi, dan bekerja bersama. Folder proyek yang dilacak Git disebut <b>repository</b>. Netlify dan Vercel juga membaca repository dari GitHub untuk men-deploy aplikasi.`],
-[`Alur dasar yang paling sering dipakai`,`Tiga kata kunci yang perlu diingat: <code>add</code> memilih perubahan yang akan disimpan, <code>commit</code> menyimpannya sebagai satu titik riwayat beserta catatan, dan <code>push</code> mengirimnya ke GitHub.`,`git init                               # mulai melacak folder ini
+[`Alur dasar: tahap awal dan tahap rutin`,`Alurnya terbagi dua. <b>Tahap awal, cukup sekali per proyek:</b> <code>git init</code> mengaktifkan Git di folder itu. <code>git branch -M main</code> memastikan cabang utamanya bernama <code>main</code>. <code>git remote add origin ALAMAT</code> memberi tahu Git alamat repository GitHub tempat salinan online akan disimpan. <code>remote</code> berarti lokasi di luar komputer Anda, dan <code>origin</code> hanyalah nama panggilan untuk alamat itu (kebiasaan umum). Alamatnya Anda salin dari halaman repository yang baru dibuat di GitHub. <b>Tahap rutin, setiap ada perubahan:</b> <code>add</code> memilih perubahan yang akan disimpan, <code>commit</code> menyimpannya sebagai satu titik riwayat beserta catatan, dan <code>push</code> mengirimnya ke GitHub. Tanda <code>-u origin main</code> pada push pertama menghubungkan cabang main di komputer Anda dengan main di GitHub, sehingga berikutnya cukup mengetik <code>git push</code>.`,`# TAHAP AWAL (sekali saja)
+git init                               # mulai melacak folder ini
+git branch -M main                     # beri nama cabang utama: main
+git remote add origin https://github.com/namaanda/yawin-academy.git
+# ^ simpan alamat GitHub dengan nama panggilan "origin"
+
+# TAHAP RUTIN (setiap ada perubahan)
 git add .                              # pilih semua perubahan
 git commit -m "tambah halaman login"   # simpan + catatan
-git remote add origin https://github.com/namaanda/yawin-academy.git
-git push -u origin main                # kirim ke GitHub`],
+git push -u origin main                # kirim ke GitHub
+# ^ untuk push berikutnya cukup: git push`],
 [`Branch dan pull request`,`<b>Branch</b> adalah cabang untuk mencoba fitur baru tanpa mengganggu versi utama (biasanya bernama <code>main</code>). Kalau fitur sudah siap, Anda mengajukan <b>pull request</b>, yaitu permintaan agar cabang itu digabungkan setelah ditinjau. Saat bekerja sendirian, Anda boleh langsung memakai <code>main</code>, tetapi pada tim kebiasaan ini menjaga versi utama tetap aman.`]
 ],
 a:`Git seperti fitur riwayat versi pada dokumen online, tetapi untuk seluruh folder proyek, dan Anda yang memutuskan kapan mengambil foto (commit). Foto-foto itu tersusun berurutan, sehingga Anda bisa kembali ke salah satunya kapan saja.`,
-k:[`Meng-commit berkas rahasia seperti <code>.env</code> atau kunci API. Daftarkan berkas itu ke <code>.gitignore</code> sebelum <code>git add</code>.`,`Menulis catatan commit seperti update atau fix. Tulis yang spesifik, misalnya perbaiki validasi email, supaya riwayatnya berguna.`,`Lupa <code>git add</code> sebelum <code>git commit</code>, sehingga tidak ada perubahan yang tersimpan.`,`Mengira commit sudah mengirim kode ke GitHub. Commit hanya menyimpan di komputer Anda, pengiriman dilakukan oleh <code>push</code>.`],
+k:[`Meng-commit berkas rahasia seperti <code>.env</code> atau kunci API. Daftarkan berkas itu ke <code>.gitignore</code> sebelum <code>git add</code>.`,`Menulis catatan commit seperti update atau fix. Tulis yang spesifik, misalnya perbaiki validasi email, supaya riwayatnya berguna.`,`Lupa <code>git add</code> sebelum <code>git commit</code>, sehingga tidak ada perubahan yang tersimpan.`,`Mengira commit sudah mengirim kode ke GitHub. Commit hanya menyimpan di komputer Anda, pengiriman dilakukan oleh <code>push</code>.`,`Muncul error <code>remote origin already exists</code>. Artinya nama origin sudah terpakai di folder itu. Lihat alamatnya dengan <code>git remote -v</code>, dan ubah dengan <code>git remote set-url origin ALAMAT_BARU</code>.`],
 q:{q:`Urutan yang benar untuk menyimpan perubahan lalu mengirimnya ke GitHub adalah...`,o:[`commit, add, push`,`add, commit, push`,`push, add, commit`,`add, push, commit`],a:1,e:`Pilih perubahan dengan add, simpan dengan commit, lalu kirim dengan push.`},
 r:[`Git mencatat riwayat perubahan kode.`,`GitHub menyimpan repository online dan memudahkan kerja bersama.`,`Alurnya add, commit, push.`,`Jangan pernah meng-commit berkas rahasia seperti .env.`]}
 ];
