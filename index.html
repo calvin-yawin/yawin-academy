@@ -87,6 +87,7 @@ code{background:color-mix(in srgb,var(--ac) 22%,transparent);padding:1px 6px;bor
 @keyframes fall{to{transform:translateY(112vh) rotate(720deg)}}
 @media(prefers-reduced-motion:reduce){.cf{display:none}}
 .resume{border-left:6px solid var(--ac);margin:16px 0 6px}.resume .row{margin-top:10px}
+.xe{margin:10px 0;background:color-mix(in srgb,var(--hl) 8%,transparent);border:1px solid var(--bd);border-radius:10px;padding:10px 12px}.xe summary{cursor:pointer;font-weight:600}.xe dl{margin:6px 0 0}.xe dt{margin-top:12px}.xe dt code{white-space:pre-wrap;word-break:break-word}.xe dd{margin:4px 0 0;color:var(--mu);font-size:15px;line-height:1.6}
 </style></head><body><div class="w" id="app"></div>
 <button class="tgl" id="tt" onclick="tgl()" aria-label="Ganti tema terang atau gelap">🌙</button>
 <script>
@@ -349,6 +350,191 @@ else if(last)h+=`<button onclick="go('m${i}')">Lanjut ke contoh praktik →</but
 else h+=`<button onclick="go('r${i}-${j+1}')">Materi berikutnya →</button>`;
 return h+'</div>'}
 addEventListener('scroll',()=>{const e=document.getElementById('rp');if(!e)return;const d=document.documentElement;e.style.width=Math.min(100,scrollY/Math.max(1,d.scrollHeight-innerHeight)*100)+'%';ss()},{passive:true});
+M[2].x=[
+['Siapkan akses di database',`-- 1. Jadikan akun Anda anggota organisasi Toko A
+--    (ganti ID_USER_ANDA dengan User UID akun Anda)
+insert into members (user_id, organization_id)
+select 'ID_USER_ANDA', id from organizations where name = 'Toko A';
+
+-- 2. Izinkan anggota menambah proyek di organisasinya
+create policy "tambah proyek organisasi sendiri" on projects
+for insert with check (
+  organization_id in (
+    select organization_id from members where user_id = auth.uid()
+  )
+);`,'Daftar dulu di aplikasi ini atau lewat Supabase agar akun Anda ada. Lalu ambil User UID akun itu di Authentication, Users. Jalankan kode di SQL Editor. Tanpa langkah ini, kode di langkah berikutnya tidak akan menampilkan atau menyimpan data, karena RLS dari Minggu 2 menolaknya.'],
+['Hubungkan halaman web ke Supabase',`<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
+<script>
+const db = supabase.createClient("URL_PROYEK_ANDA", "ANON_PUBLIC_KEY_ANDA");
+
+async function masuk(email, password) {
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  if (error) alert(error.message);
+}
+async function tambah(judul) {
+  const { error } = await db.from("projects").insert({ title: judul, organization_id: "ID_ORGANISASI_ANDA" });
+  if (error) alert(error.message);
+}
+async function baca() {
+  const { data } = await db.from("projects").select("*");
+  console.log(data);
+}
+<\/script>`,'Simpan sebagai berkas .html dan buka di browser. Ambil URL dan anon key di Supabase (Project Settings, API). Id organisasi didapat dengan menjalankan select id, name from organizations di SQL Editor. Lalu buka konsol browser (tekan F12), dan ketik berurutan: masuk("email-anda","sandi-anda"), tambah("Proyek saya"), baca(). Pakai hanya anon key di frontend, jangan pernah service_role key.'],
+['Simpan rahasia di environment variable',`# file .env (jangan di-commit)
+SUPABASE_URL=isi_url_anda
+SUPABASE_ANON_KEY=isi_key_anda
+
+# file .gitignore
+.env`,'Pada halaman HTML biasa seperti langkah 2, anon key memang boleh tertulis langsung karena sifatnya publik dan dilindungi RLS. Berkas .env dipakai untuk proyek berframework atau kode di sisi server, terutama untuk kunci rahasia. Biasakan memasukkan .env ke .gitignore sebelum git add. Cek di GitHub bahwa berkas .env tidak ikut terunggah.'],
+['Deploy ke internet',`1. Push project ke GitHub
+2. Buka netlify.com atau vercel.com, login dengan GitHub
+3. Klik Add New Project, pilih repository Anda
+4. Isi environment variable yang sama (jika proyek Anda memakainya)
+5. Klik Deploy`,'Setelah selesai, Anda mendapat link publik. Buka dari HP, lalu coba login dan tambah data. Ingat bahwa alamat baru perlu didaftarkan di Site URL dan Redirect URLs Supabase bila memakai konfirmasi email.']
+];
+M[3].x=[
+['Tambahkan plan ke organisasi',`alter table organizations add column plan text default 'free';
+
+update organizations set plan = 'free';`,'Setiap organisasi sekarang punya plan. Cek hasilnya di Table Editor.'],
+['Batasi plan Free di database',`create or replace function cek_batas_proyek() returns trigger as $$
+begin
+  if (select plan from organizations where id = new.organization_id) = 'free'
+     and (select count(*) from projects where organization_id = new.organization_id) >= 3 then
+    raise exception 'Plan Free dibatasi 3 proyek. Upgrade ke Pro.';
+  end if;
+  return new;
+end; $$ language plpgsql;
+
+create trigger batas_proyek before insert on projects
+for each row execute function cek_batas_proyek();
+
+-- Uji: jalankan berulang kali sampai muncul error
+insert into projects (organization_id, title)
+select id, 'Proyek uji' from organizations where name = 'Toko A';`,'Toko A sudah punya 1 proyek dari Minggu 2. Jalankan insert uji dua kali sampai jumlahnya 3 proyek. Percobaan berikutnya (proyek ke-4) ditolak dengan pesan error. Aturan ini berlaku walau UI dilewati.'],
+['Simulasikan webhook pembayaran dan hitung MRR',`-- Anggap webhook mengabarkan pembayaran sukses
+update organizations set plan = 'pro' where name = 'Toko A';
+
+-- Jalankan lagi insert uji dari langkah 2: sekarang berhasil
+
+-- Hitung MRR jika plan Pro Rp99.000 per bulan
+select count(*) filter (where plan = 'pro') * 99000 as mrr_rupiah
+from organizations;`,'Di aplikasi nyata, perubahan plan dilakukan oleh server saat menerima webhook dari Midtrans atau Xendit, bukan manual.']
+];
+const XE=[
+[
+[
+[`<!DOCTYPE html>`,`Pemberitahuan ke browser bahwa ini dokumen HTML modern. Selalu ditulis di baris paling atas.`],
+[`<html> ... </html>`,`Pembungkus seluruh isi halaman. Hampir semua tag HTML punya pasangan: tag pembuka <code>&lt;html&gt;</code> dan tag penutup dengan garis miring <code>&lt;/html&gt;</code>.`],
+[`<body> ... </body>`,`Bagian halaman yang tampil di layar. Semua yang dilihat pengguna ditaruh di sini.`],
+[`<h3>Daftar Pengguna</h3>`,`Membuat judul (heading) tingkat 3. Teks di antara tag pembuka dan penutup menjadi isi judulnya.`],
+[`<ul id="daftar"></ul>`,`<code>ul</code> (unordered list) adalah daftar berpoin. <code>id="daftar"</code> memberi daftar ini nama unik <b>daftar</b>, agar JavaScript bisa menemukannya nanti. Isinya sengaja kosong karena akan diisi oleh kode di bawah. <code>&lt;/ul&gt;</code> menutup daftar.`],
+[`<script> ... <\/script>`,`Area untuk menulis kode JavaScript di dalam halaman HTML. Browser menjalankan isinya saat halaman dibuka.`],
+[`fetch("https://jsonplaceholder.typicode.com/users")`,`<code>fetch</code> mengirim request ke alamat di dalam kurung untuk mengambil data. Alamat ini adalah API publik latihan yang mengembalikan 10 pengguna contoh. Hasilnya tidak datang seketika karena internet butuh waktu, jadi fetch memberi janji (promise) bahwa jawabannya akan datang.`],
+[`.then(res => res.json())`,`<code>.then</code> berarti setelah jawaban datang, lakukan ini. <code>res</code> adalah nama untuk balasan (response). Tanda <code>=&gt;</code> adalah function panah: terima <code>res</code> di kiri, kerjakan bagian kanan. <code>res.json()</code> mengubah isi balasan yang berbentuk JSON menjadi data yang bisa dipakai JavaScript.`],
+[`.then(data => { ... })`,`Then kedua: setelah JSON siap, hasilnya masuk ke nama <code>data</code>, berupa daftar 10 pengguna. Kurung kurawal <code>{ }</code> membungkus langkah-langkah yang dikerjakan.`],
+[`data.forEach(u => { ... })`,`<code>forEach</code> artinya untuk setiap. Blok di dalamnya diulang untuk tiap item di <code>data</code>, dan item yang sedang diproses disebut <code>u</code> (satu pengguna).`],
+[`document.getElementById("daftar")`,`<code>document</code> adalah halaman ini. <code>getElementById("daftar")</code> mencari elemen yang id-nya daftar, yaitu <code>ul</code> tadi.`],
+[`.innerHTML += "<li>" + u.name + " - " + u.email + "</li>"`,`<code>innerHTML</code> adalah isi HTML dari elemen itu. Tanda <code>+=</code> berarti menambahkan ke isi yang sudah ada, bukan menimpa. <code>li</code> adalah satu butir daftar. Tanda <code>+</code> menyambung potongan teks. <code>u.name</code> dan <code>u.email</code> mengambil nama dan email dari pengguna yang sedang diproses.`],
+[`});`,`Penutup: <code>}</code> menutup blok, <code>)</code> menutup forEach atau then, dan <code>;</code> mengakhiri perintah.`]
+],
+[
+[`git init`,`Mengaktifkan Git di folder ini, sehingga Git mulai bisa melacak perubahan. Perintah ini membuat folder tersembunyi bernama .git.`],
+[`git add .`,`Memasukkan semua perubahan di folder ke keranjang (staging). Tanda titik berarti folder saat ini beserta seluruh isinya.`],
+[`git commit -m "latihan pertama: panggil API"`,`Menyimpan isi keranjang sebagai satu titik riwayat. <code>-m</code> singkatan dari message (catatan), dan teks dalam tanda kutip adalah catatan perubahan Anda.`]
+],
+[
+[`// Ganti baris data.forEach ...`,`Baris yang diawali <code>//</code> adalah komentar. Itu catatan untuk manusia dan tidak dijalankan.`],
+[`data.slice(0, 3)`,`<code>slice</code> memotong sebagian daftar. <code>(0, 3)</code> artinya mulai dari posisi 0 sampai sebelum posisi 3, yaitu 3 item pertama. Ingat posisi dihitung mulai dari 0.`],
+[`.forEach(u => {`,`Sama seperti sebelumnya, tetapi sekarang hanya mengulang untuk 3 item hasil potongan.`]
+]
+],
+[
+[
+[`create table organizations ( ... );`,`Perintah untuk membuat tabel baru bernama organizations. Daftar kolomnya ada di dalam tanda kurung, dipisah koma. Titik koma menutup perintah.`],
+[`id uuid primary key default gen_random_uuid()`,`Kolom id bertipe uuid (kode acak yang unik). <code>primary key</code> menjadikannya pengenal unik tiap baris. <code>default gen_random_uuid()</code> mengisinya otomatis dengan uuid acak setiap ada baris baru.`],
+[`name text not null`,`Kolom name bertipe teks. <code>not null</code> artinya wajib diisi.`],
+[`created_at timestamptz default now()`,`Kolom waktu lengkap dengan zona waktu. <code>default now()</code> mengisinya otomatis dengan waktu saat baris dibuat.`],
+[`create table members ( ... );`,`Tabel penghubung antara pengguna dan organisasi. Satu organisasi punya banyak anggota, dan satu pengguna bisa ikut banyak organisasi (many-to-many).`],
+[`user_id uuid references auth.users(id) on delete cascade`,`<code>references</code> membuat foreign key: kolom ini menunjuk ke kolom id di tabel auth.users (daftar akun Supabase). <code>on delete cascade</code> berarti jika akun itu dihapus, baris ini ikut terhapus otomatis.`],
+[`organization_id uuid references organizations(id) on delete cascade`,`Sama seperti di atas, tetapi menunjuk ke tabel organizations.`],
+[`role text default 'member'`,`Kolom peran. Kalau tidak diisi, nilainya otomatis member.`],
+[`primary key (user_id, organization_id)`,`Primary key gabungan dari dua kolom. Satu pengguna tidak bisa tercatat dua kali di organisasi yang sama.`],
+[`create table projects ( ... );`,`Tabel proyek. <code>organization_id</code> menunjuk ke organisasi pemiliknya, <code>title text not null</code> adalah judul yang wajib diisi, dan <code>status text default 'baru'</code> terisi baru bila tidak ditentukan.`]
+],
+[
+[`insert into organizations (name) values ('Toko A'), ('Toko B');`,`<code>insert into</code> menambah baris. Kolom yang diisi ditulis dalam kurung, yaitu name. <code>values</code> diikuti satu kurung untuk tiap baris baru, jadi ini membuat dua organisasi. Kolom id dan created_at terisi otomatis oleh nilai default.`],
+[`insert into projects (organization_id, title) select id, 'Proyek pertama' from organizations;`,`Memasukkan baris ke projects dari hasil sebuah query. Untuk tiap organisasi, ambil id-nya dan beri judul Proyek pertama. Hasilnya dua proyek, satu per organisasi.`],
+[`select o.name, p.title, p.status`,`<code>select</code> memilih kolom yang ingin ditampilkan. Awalan <code>o.</code> dan <code>p.</code> menunjukkan kolom itu milik tabel yang mana.`],
+[`from projects p`,`Sumber datanya tabel projects, diberi nama singkat (alias) p.`],
+[`join organizations o on o.id = p.organization_id;`,`<code>join</code> menggabungkan dengan tabel organizations (alias o). <code>on</code> menentukan pasangannya: baris organisasi yang id-nya sama dengan organization_id milik proyek. Hasilnya 2 baris.`]
+],
+[
+[`alter table projects enable row level security;`,`Mengaktifkan Row Level Security. Setelah aktif, tanpa aturan (policy) tidak ada baris yang bisa diakses pengguna lewat API.`],
+[`create policy "baca proyek organisasi sendiri" on projects`,`Membuat aturan baru di tabel projects. Teks dalam tanda kutip ganda adalah nama aturan.`],
+[`for select`,`Aturan ini hanya berlaku untuk membaca data.`],
+[`using ( ... )`,`Kondisi yang harus benar agar sebuah baris boleh dibaca.`],
+[`organization_id in ( select organization_id from members where user_id = auth.uid() )`,`Baris proyek boleh dibaca jika organisasinya termasuk organisasi tempat pengguna yang sedang login tercatat sebagai anggota. <code>auth.uid()</code> adalah id pengguna yang sedang login. Query di dalam kurung disebut subquery.`]
+]
+],
+[
+[
+[`insert into members (user_id, organization_id) select 'ID_USER_ANDA', id from organizations where name = 'Toko A';`,`Menambah satu baris ke members. Teks ID_USER_ANDA (ganti dengan User UID akun Anda) menjadi user_id, dan id organisasi bernama Toko A menjadi organization_id. <code>where</code> menyaring hanya organisasi yang namanya Toko A.`],
+[`create policy "tambah proyek organisasi sendiri" on projects`,`Membuat aturan baru di tabel projects. Aturan sebelumnya hanya untuk membaca.`],
+[`for insert`,`Aturan ini berlaku untuk menambah baris baru.`],
+[`with check ( ... )`,`Syarat yang harus benar untuk baris yang akan ditambahkan. Ini berbeda dengan <code>using</code> yang dipakai untuk baris yang sudah ada.`],
+[`organization_id in ( select organization_id from members where user_id = auth.uid() )`,`Anda hanya boleh menambah proyek ke organisasi di mana Anda terdaftar sebagai anggota.`]
+],
+[
+[`<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>`,`<code>script</code> dengan atribut <code>src</code> memuat file kode dari alamat lain, di sini pustaka supabase-js dari CDN (jaringan penyedia file cepat). <code>@2</code> berarti versi utama 2. Setelah termuat, tersedia objek bernama <code>supabase</code>.`],
+[`<script> ... <\/script>`,`Blok kode JavaScript milik Anda sendiri.`],
+[`const db = supabase.createClient("URL_PROYEK_ANDA", "ANON_PUBLIC_KEY_ANDA");`,`<code>const</code> membuat variabel tetap bernama db. <code>createClient</code> membuat sambungan ke project Supabase Anda memakai URL dan anon key (ganti kedua teks itu dengan milik Anda).`],
+[`async function masuk(email, password) { ... }`,`Membuat function bernama masuk yang menerima email dan password. Kata <code>async</code> berarti function ini boleh memakai <code>await</code> untuk menunggu jawaban server.`],
+[`const { error } = await db.auth.signInWithPassword({ email, password });`,`<code>await</code> menunggu server menjawab sebelum lanjut. <code>db.auth.signInWithPassword</code> meminta login. Jawabannya berupa objek, dan <code>{ error }</code> mengambil hanya bagian error-nya. <code>{ email, password }</code> adalah singkatan dari <code>{ email: email, password: password }</code>.`],
+[`if (error) alert(error.message);`,`Jika ada error, tampilkan pesannya di kotak peringatan.`],
+[`await db.from("projects").insert({ title: judul, organization_id: "ID_ORGANISASI_ANDA" })`,`<code>from("projects")</code> memilih tabel, <code>insert</code> menambah satu baris. Kolom title diisi nilai dari parameter judul, dan organization_id harus id organisasi Anda agar lolos aturan RLS.`],
+[`await db.from("projects").select("*")`,`<code>select("*")</code> mengambil semua kolom dari tabel projects. Karena ada RLS, yang kembali hanya proyek di organisasi Anda.`],
+[`const { data } = ...`,`<code>{ data }</code> mengambil bagian data dari jawaban server, yaitu isi tabelnya.`],
+[`console.log(data);`,`Menampilkan isi data di konsol browser (tekan F12) agar bisa Anda periksa.`]
+],
+[
+[`# file .env (jangan di-commit)`,`Baris yang diawali <code>#</code> adalah komentar. Berkas <code>.env</code> menyimpan konfigurasi dan rahasia, dan tidak boleh ikut diunggah ke GitHub.`],
+[`SUPABASE_URL=isi_url_anda`,`Satu baris konfigurasi dengan pola NAMA=nilai. Kodenya nanti memanggil nilai ini lewat namanya.`],
+[`SUPABASE_ANON_KEY=isi_key_anda`,`Pola yang sama untuk kunci anon.`],
+[`# file .gitignore  /  .env`,`<code>.gitignore</code> adalah daftar berkas yang diabaikan Git. Menulis <code>.env</code> di dalamnya membuat Git tidak pernah melacak atau meng-commit berkas itu.`]
+],
+[
+[`1. Push project ke GitHub`,`Mengirim kode ke GitHub dengan perintah push, supaya hosting bisa membacanya.`],
+[`2. Buka netlify.com atau vercel.com`,`Keduanya adalah layanan hosting untuk menayangkan situs. Login memakai akun GitHub agar mereka bisa membaca repository Anda.`],
+[`3. Klik Add New Project, pilih repository`,`Memberi tahu hosting repository mana yang akan ditayangkan.`],
+[`4. Isi environment variable`,`Memasukkan isi .env ke pengaturan hosting, karena berkas .env sendiri tidak diunggah. Lewati jika proyek Anda tidak memakainya.`],
+[`5. Klik Deploy`,`Hosting membangun dan menayangkan proyek, lalu memberi alamat publik.`]
+]
+],
+[
+[
+[`alter table organizations add column plan text default 'free';`,`<code>alter table</code> mengubah tabel yang sudah ada. <code>add column plan</code> menambah kolom bernama plan bertipe teks. <code>default 'free'</code> membuat baris baru otomatis berplan free.`],
+[`update organizations set plan = 'free';`,`<code>update</code> mengubah baris yang sudah ada. <code>set plan = 'free'</code> mengisi kolom plan. Karena tidak ada <code>where</code>, perubahan berlaku untuk semua baris.`]
+],
+[
+[`create or replace function cek_batas_proyek()`,`Membuat function di dalam database bernama cek_batas_proyek (atau menimpanya kalau sudah ada).`],
+[`returns trigger as $$ ... $$ language plpgsql;`,`<code>returns trigger</code> berarti function ini khusus dipanggil oleh trigger. Tanda <code>$$</code> menandai awal dan akhir isi function, dan <code>plpgsql</code> adalah bahasa pemrograman function di PostgreSQL.`],
+[`begin ... end;`,`Pembuka dan penutup isi function.`],
+[`if (select plan from organizations where id = new.organization_id) = 'free'`,`<code>new</code> adalah baris proyek yang sedang akan ditambahkan. Bagian ini mengambil plan organisasi pemilik proyek itu, lalu mengecek apakah nilainya free.`],
+[`and (select count(*) from projects where organization_id = new.organization_id) >= 3 then`,`Dan jumlah proyek organisasi itu sudah 3 atau lebih. Kalau kedua syarat benar, blok di bawahnya dijalankan.`],
+[`raise exception 'Plan Free dibatasi 3 proyek. Upgrade ke Pro.';`,`Membatalkan penambahan baris dan memunculkan pesan error ini.`],
+[`end if;`,`Menutup blok if.`],
+[`return new;`,`Mengizinkan baris baru disimpan. Ini hanya tercapai kalau tidak ditolak oleh if tadi.`],
+[`create trigger batas_proyek before insert on projects for each row execute function cek_batas_proyek();`,`Trigger adalah pemicu otomatis. <code>before insert</code> artinya dijalankan sebelum baris baru disimpan, <code>on projects</code> menunjuk tabelnya, <code>for each row</code> berlaku untuk tiap baris, dan <code>execute function</code> menjalankan function tadi.`],
+[`insert into projects (organization_id, title) select id, 'Proyek uji' from organizations where name = 'Toko A';`,`Menambah satu proyek uji ke organisasi Toko A. Dijalankan berulang kali untuk melihat saat trigger menolaknya.`]
+],
+[
+[`-- Anggap webhook mengabarkan pembayaran sukses`,`Baris yang diawali <code>--</code> adalah komentar di SQL dan tidak dijalankan.`],
+[`update organizations set plan = 'pro' where name = 'Toko A';`,`Mengubah plan menjadi pro. Kata <code>where</code> membatasi perubahan hanya untuk Toko A. Ini meniru yang dilakukan server saat menerima kabar pembayaran sukses.`],
+[`select count(*) filter (where plan = 'pro') * 99000 as mrr_rupiah from organizations;`,`<code>count(*)</code> menghitung baris. <code>filter (where plan = 'pro')</code> membatasi hitungan pada organisasi berplan pro. <code>* 99000</code> mengalikan dengan harga per bulan. <code>as mrr_rupiah</code> memberi nama pada kolom hasil. MRR adalah pendapatan berulang bulanan.`]
+]
+]
+];
+function xe(i,j){const L=(XE[i]||[])[j];if(!L)return '';return `<details class="xe" open><summary>🔍 Penjelasan tiap bagian kode</summary><dl>${L.map(([a,b])=>`<dt><code>${esc(a)}</code></dt><dd>${b}</dd>`).join('')}</dl></details>`}
 const SB_URL='https://syegjfqhbxuvzuxgjhob.supabase.co',SB_KEY='sb_publishable_PQRgCtM1RYEA-jNcMY7eMQ_vfOOfi3S';
 const db=supabase.createClient(SB_URL,SB_KEY);
 const $=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -392,7 +578,7 @@ function vbox(i){const q=(P.proofs.find(p=>p.module_idx===i)||{}).question||'';c
 function mod(i){const m=M[i],all=mDone(i);let h=`<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>Minggu ${i+1}: ${m.t}</h2>${m.r?'<p class="mu">Buka tiap materi, baca sampai selesai, lalu jawab cek pemahaman untuk menyelesaikannya.</p>':'<p class="mu">Materi minggu ini masih berupa ringkasan, materi lengkap menyusul. Centang setelah Anda benar-benar memahaminya.</p>'}`;
 m.l.forEach(([t,d],j)=>{if(m.r){const dn=P.d[i+'-'+j];h+=`<div class="c lesson ${dn?'dn':''}" onclick="go('r${i}-${j}')"><div class="lb">${dn?'✅':'📖'}</div><div><b>${t}</b><p class="mu">${d}</p><p class="tg">⏱ ${rt(m.r[j])} menit baca · ${dn?'Selesai':'Belum dibaca'}</p></div></div>`}else h+=`<label class="c l"><input type="checkbox" ${P.d[i+'-'+j]?'checked':''} onchange="tg(${i},${j})"><span><b>${t}</b><br><span class="mu">${d}</span></span></label>`});
 h+=`<h2 style="margin-top:22px">Contoh praktik: tiru dulu</h2><p class="mu">Salin atau ketik kode di bawah, jalankan sendiri, dan pastikan hasilnya sama sebelum lanjut.</p>`;
-m.x.forEach(([t,k,n],j)=>{h+=`<div class="c" style="margin:10px 0"><b>Langkah ${j+1}: ${t}</b><pre>${esc(k)}</pre><button class="cp g" onclick="cp(${i},${j},this)">Salin kode</button><p class="mu">${n}</p></div>`});
+m.x.forEach(([t,k,n],j)=>{h+=`<div class="c" style="margin:10px 0"><b>Langkah ${j+1}: ${t}</b><pre>${esc(k)}</pre><button class="cp g" onclick="cp(${i},${j},this)">Salin kode</button>${xe(i,j)}<p class="mu">${n}</p></div>`});
 h+=vbox(i)+`<div class="c" style="margin-top:12px"><b>Tantangan mandiri</b><p class="mu">${m.p}</p></div><div class="row"><button ${all?'':'disabled'} onclick="start('m${i}')">${all?'Mulai kuis (lulus 70%)':'Selesaikan materi dan bukti praktik untuk membuka kuis'}</button></div>`;return h}
 function quiz(){let h=`<a class="bk" onclick="go('home')">Kembali ke daftar</a><h2>${A.k==='f'?'Ujian akhir':'Kuis minggu '+(+A.k.slice(1)+1)}</h2><p class="mu">Nilai minimal untuk lulus: ${A.th}%</p>`;
 A.qs.forEach((q,i)=>{const rv=A.rev&&A.rev[q.id];h+=`<div class="c" style="margin:10px 0"><b>${i+1}. ${esc(q.question)}</b>`;q.options.forEach((o,j)=>{let c='o';if(rv){if(o===rv.correct)c+=' ok';else if(j===q.s)c+=' no'}else if(j===q.s)c+=' s';h+=`<button class="${c}" onclick="pick(${i},${j})">${esc(o)}</button>`});if(rv)h+=`<div class="ex">${esc(rv.explanation)}</div>`;h+='</div>'});
